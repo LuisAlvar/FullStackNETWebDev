@@ -26,4 +26,5 @@ The following steps were used to generate this project:
 The following steps occurs after project was generated for our purpose:
 - Modify `proxy.conf.js` with target value else to https://localhost:40443
 - Modify `launch.json` switch the array placement with edge and chrome. 
-- 
+- Update `package.json` any instance of healthcheck.client change to HealthCheck
+- Update `angular.json` any instance of healthcheck.client change the HealthCheck
