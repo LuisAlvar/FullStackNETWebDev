@@ -36,7 +36,7 @@ describe('AppComponent', () => {
 
     component.ngOnInit();
 
-    const req = httpMock.expectOne('/weatherforecast');
+    const req = httpMock.expectOne('/api/weatherforecast');
     expect(req.request.method).toEqual('GET');
     req.flush(mockForecasts);
 

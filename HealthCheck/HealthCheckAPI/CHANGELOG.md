@@ -16,3 +16,4 @@ The following steps occurs after project was generated for our purpose:
 	- for https link set port to 40443
 	- for http link set port to 40080
 - Update `launchSettings.json` set IIS Express:launchBrowser to false
+- Update `WeatherForecastController.cs` change the endpoint for this contoller to api/[controller]

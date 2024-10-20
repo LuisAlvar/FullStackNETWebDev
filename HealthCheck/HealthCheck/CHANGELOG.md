@@ -28,3 +28,8 @@ The following steps occurs after project was generated for our purpose:
 - Modify `launch.json` switch the array placement with edge and chrome. 
 - Update `package.json` any instance of healthcheck.client change to HealthCheck
 - Update `angular.json` any instance of healthcheck.client change the HealthCheck
+- Update `app.component.ts` change the title healthcheck.client to HealthCheck
+
+- Update `proxy.conf.js` the context array type with "/api" as the single element within the array
+- Update `app.component.ts` add api as the prefix to the weatherforecast endpoint /api/weatherforecast. 
+- Update `app.component.spec.ts` test case for 'shouldretrieve weather forecast from the server' change the endpoint to /api/weatherforecast 
