@@ -33,3 +33,8 @@ The following steps occurs after project was generated for our purpose:
 - Update `proxy.conf.js` the context array type with "/api" as the single element within the array
 - Update `app.component.ts` add api as the prefix to the weatherforecast endpoint /api/weatherforecast. 
 - Update `app.component.spec.ts` test case for 'shouldretrieve weather forecast from the server' change the endpoint to /api/weatherforecast 
+
+- Add new folder under `/src` called environments
+- Add file `enviroment.ts` for debug/dev 
+- Add file `enviroment.prod.ts` for production
+
