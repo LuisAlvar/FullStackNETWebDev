@@ -40,3 +40,5 @@ The following steps occurs after project was generated for our purpose:
 
 - Run `ng generate component Home --skip-tests`
 - Run `ng generate component FetchData --skip-tests`
+- Run `ng generate component NavMenu --skip-tests`
+- Move the get weatherforecast logic from app.component to fetchdata.component
