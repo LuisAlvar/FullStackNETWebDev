@@ -1,12 +1,6 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-@Component({
-  selector: 'app-fetch-data',
-  templateUrl: './fetch-data.component.html',
-  styleUrl: './fetch-data.component.css'
-})
-
 interface WeatherForecast {
   date: string;
   temperatureC: number;
@@ -14,6 +8,11 @@ interface WeatherForecast {
   summary: string;
 }
 
+@Component({
+  selector: 'app-fetch-data',
+  templateUrl: './fetch-data.component.html',
+  styleUrl: './fetch-data.component.css'
+})
 export class FetchDataComponent {
   public forecasts: WeatherForecast[] = [];
 
@@ -33,5 +32,4 @@ export class FetchDataComponent {
       }
     );
   }
-
 }
