@@ -42,3 +42,7 @@ The following steps occurs after project was generated for our purpose:
 - Run `ng generate component FetchData --skip-tests`
 - Run `ng generate component NavMenu --skip-tests`
 - Move the get weatherforecast logic from app.component to fetchdata.component
+- Modify `app.component.html` to contain the app-nav-menu and router-outlet tags. 
+- Modify `nav-menu.component.html` for some odd reason html browsers dont like two individual anchor tags together one after the other. 
+  - Placed the anchor within their own list type element 
+- Modify `home.component.html` contains a simple greeting. 
