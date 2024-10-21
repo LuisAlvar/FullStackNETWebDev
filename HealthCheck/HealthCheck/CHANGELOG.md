@@ -39,3 +39,4 @@ The following steps occurs after project was generated for our purpose:
 - Add file `enviroment.prod.ts` for production
 
 - Run `ng generate component Home --skip-tests`
+- Run `ng generate component FetchData --skip-tests`
