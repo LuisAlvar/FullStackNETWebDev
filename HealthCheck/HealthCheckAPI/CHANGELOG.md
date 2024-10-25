@@ -23,4 +23,7 @@ The following steps occurs after project was generated for our purpose:
 - Update `Program.cs` add UseHealthCheck and add /api/health as a param as type PathString to main WebApplication object
 - Add new folder `./HealthCheck` and new file ICMPHealthCheck.cs
 - Update `Program.cs` to HealthChecks() add AddCheck<ICMPHealthCheck>("ICMP")
+- Update `ICMPHealthCheck.cs` add a constructor with params host and healthroundtriptime
+	- Pass a custom message to the type of HealthCheckResult
+- Update `Program.cs` add more AddChecks
 - 
