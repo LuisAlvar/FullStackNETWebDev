@@ -17,3 +17,8 @@ The following steps occurs after project was generated for our purpose:
 	- for http link set port to 40080
 - Update `launchSettings.json` set IIS Express:launchBrowser to false
 - Update `WeatherForecastController.cs` change the endpoint for this contoller to api/[controller]
+
+- No longer need to add Nuget package Microsoft.AspNetcore.Diagnostics.HealthChecks
+- Update `Program.cs` add HealthCheck to the service object
+- Update `Program.cs` add UseHealthCheck and add /api/health as a param as type PathString to main WebApplication object
+- 
