@@ -26,4 +26,5 @@ The following steps occurs after project was generated for our purpose:
 - Update `ICMPHealthCheck.cs` add a constructor with params host and healthroundtriptime
 	- Pass a custom message to the type of HealthCheckResult
 - Update `Program.cs` add more AddChecks
+- Add new file `CustomHealthCheckOptions.cs` under HealthCheck namespace for a more granular output with JSON structure. 
 - 
