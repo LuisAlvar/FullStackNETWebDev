@@ -47,4 +47,10 @@ The following steps occurs after project was generated for our purpose:
   - Placed the anchor within their own list type element 
 - Modify `home.component.html` contains a simple greeting. 
 
+- Run `ng generate compontn HealthCheck --module=app --skip-tests` and add all of functionality to call HealthCheckAPI /api/health and display the information
+- Modify `nav-menu.component.html` add a new anchor tag for Health Check
+- Modify `app-routing.module.ts` add new route for 'health-check' for the HealthCheckComponent
+- Modify `app.module.ts` add HealthCheckComponent
+
+- Run `ng add @angular/material`
 - 

@@ -34,8 +34,8 @@ public class ICMPHealthCheck : IHealthCheck
 		}
 		catch (Exception ex)
 		{
-      string err = $"ICMP to {Host} failed: {ex.ToString()}";
-      return HealthCheckResult.Unhealthy();
+      string err = $"ICMP to {Host} failed: {ex.Message.ToString()}";
+      return HealthCheckResult.Unhealthy(err);
 		}
   }
 }
