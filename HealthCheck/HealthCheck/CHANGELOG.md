@@ -53,4 +53,11 @@ The following steps occurs after project was generated for our purpose:
 - Modify `app.module.ts` add HealthCheckComponent
 
 - Run `ng add @angular/material`
-- 
+- Modify `app.module.ts` add MatButtonModule, MatIconModule, MatToolbarModule
+- Update `nav-menu.component.html`
+- Error with @angular/material 
+- remove node_modules and package-lock.json
+- Ran `npm cache clean --force`
+- Ran `npm install`
+- Ran `ng add @angular/material`_
+

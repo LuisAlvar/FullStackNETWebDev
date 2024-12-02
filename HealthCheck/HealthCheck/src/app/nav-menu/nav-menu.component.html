@@ -1,15 +1,13 @@
 <header>
-  <nav>
-    <ul>
-      <li>
-        <a [routerLink]="['/']">Home</a>
-      </li>
-      <li>
-        <a [routerLink]="['/fetch-data']">Fetch Data</a>
-      </li>
-      <li>
-        <a [routerLink]="['/health-check']">Health Check</a>
-      </li>
-    </ul>
-  </nav>
+  <mat-toolbar color="primary">
+    <button mat-icon-button [routerLink]="['/']">
+      <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="home"></mat-icon>
+    </button>
+    <a mat-flat-button color="primary" [routerLink]="['/fetch-date']">
+      Fetch Data
+    </a>
+    <a mat-flat-button color="primary" [routerLink]="['/health-check']">
+      Health Check
+    </a>
+  </mat-toolbar>
 </header>
