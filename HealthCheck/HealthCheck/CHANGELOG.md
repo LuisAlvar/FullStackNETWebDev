@@ -60,4 +60,8 @@ The following steps occurs after project was generated for our purpose:
 - Ran `npm cache clean --force`
 - Ran `npm install`
 - Ran `ng add @angular/material`_
-
+- Modify `app.component.css` add padding 
+- Modify `angular.json` switch from css to scss; there are two location that require change; 
+  - will need to change all .css files to scss file extensions
+  - along with modifying all of the ts file with new style file extension
+- Modify `styles.scss` redesign table 
