@@ -22,7 +22,20 @@ The following steps were used to generate this project:
 - Add project to solution.
 - Add project to the startup projects list.
 - Write this file.
+12/3/2024
 - Change project name from worldcities.client to WorldCities
 - Modify `package.json` change name to WorldCities
 - Modify `angular.json` change output path to dist/WorldCities also under configurations for envirnoments WorldCities:build:developement
-- 
+- Modify `proxy.conf.js` changes the context to just /api and changed the port to 40443
+12/4/2024
+- Run `ng generate componet Home --skip-tests --module=app`
+- Run `ng generate component NavMenu --skip-tests --module=app`
+- Remove forcast weather functionality.
+- Edit `app.component.html` to only contain the router-outlet tag and the app-nav-menu tag
+- Edit `app-routing.module.ts` add path = '' for HomeComponent
+- Create a new folder /src/envirnoments
+- Add envirnoments.ts and envirnoments.prod.ts files under the new folder created above.
+- Edit `environment.ts` add export const with production and baseURL properties with baseURL set to /
+- Edit `environment.prod.ts`  add export const with production and baseURL properties with baseURL set to https://localhost:40443
+- Run `ng add @angular/material` - need to remove node_modules and package-lock.json, npm cache clean -force, npm install, re-run command.
+- Replace all css files with scss file and modify all ts files with css reference
