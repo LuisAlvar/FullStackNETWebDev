@@ -38,4 +38,11 @@ The following steps were used to generate this project:
 - Edit `environment.ts` add export const with production and baseURL properties with baseURL set to /
 - Edit `environment.prod.ts`  add export const with production and baseURL properties with baseURL set to https://localhost:40443
 - Run `ng add @angular/material` - need to remove node_modules and package-lock.json, npm cache clean -force, npm install, re-run command.
+12/05/2024
 - Replace all css files with scss file and modify all ts files with css reference
+- Add new image to `public` folder
+- Modify `home.component.html` to a header, paragraph, and image tag
+- Add NuGet packages `Microsoft.EntityframeworkCore` latest version for .NET 6 is 6.0.36
+- Add NuGet packages `Microsoft.EntityFrameworkCore.Tools` latest version for .NET 6 is 6.0.36
+- Add NuGet packages `Microsoft.EntityFrameworkCore.SqlServer` latest version for .NET 6 is 6.0.36
+

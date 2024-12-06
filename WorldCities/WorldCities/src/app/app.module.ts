@@ -9,6 +9,7 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 import { MatToolbarModule } from '@angular/material/toolbar'
+import { MatIconModule } from '@angular/material/icon'
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { MatToolbarModule } from '@angular/material/toolbar'
   imports: [
     BrowserModule, HttpClientModule,
     AppRoutingModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatIconModule
   ],
   providers: [
     provideAnimationsAsync()
