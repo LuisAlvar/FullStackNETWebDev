@@ -42,7 +42,4 @@ The following steps were used to generate this project:
 - Replace all css files with scss file and modify all ts files with css reference
 - Add new image to `public` folder
 - Modify `home.component.html` to a header, paragraph, and image tag
-- Add NuGet packages `Microsoft.EntityframeworkCore` latest version for .NET 6 is 6.0.36
-- Add NuGet packages `Microsoft.EntityFrameworkCore.Tools` latest version for .NET 6 is 6.0.36
-- Add NuGet packages `Microsoft.EntityFrameworkCore.SqlServer` latest version for .NET 6 is 6.0.36
 

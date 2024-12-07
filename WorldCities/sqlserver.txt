@@ -1,0 +1,16 @@
+1.SQL Server 2022 is install using docker 
+2. Create a quick database name WorldCities 
+3. Will create a unqiue sql user to use for this database 
+SET CHECK_POLICY = OFF
+CREATE LOGIN WorldCities
+	WITH PASSWORD = 'MyVeryOwn$721'
+GO 
+SET CHECK_POLICY = ON
+4. Mapp the login to database
+CREATE USER WorldCities
+	FOR LOGIN WorldCities
+	WITH DEFAULT_SCHEMA = dbo
+GO
+EXEC sp_addrolemember N'db_owner', N'WorldCities'
+GO
+5. 
