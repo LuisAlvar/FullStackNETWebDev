@@ -49,3 +49,6 @@ The following steps were used to generate this project:
 - Create `angular-material.module.ts` file for all of the angualr material imported modules
 - Update `cities.component.html` with new angular material table
 - Update `cities.component.ts` 
+- Modify `angular-material.module.ts`  import MatPaginatorModule
+- Modify `cities.component.ts` add MatTableDataSource, MatPaginator, and ViewChild
+- Modify `cities.component.html` append the mat-paginator directive
