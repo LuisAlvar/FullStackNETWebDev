@@ -28,3 +28,13 @@ The following steps were used to generate this project:
 - Manage user secrets for this project. 
 - Add SQL Server connection string to	`secrets.json`
 - Modify `Program.cs` file add ApplicationDbContext and SQL Server support
+- Run `dotnet tool update --global dotnet-ef --version 6.0.36`
+- Run `dotnet ef migrations add "Initial" -o "Data/Migrations"` for the first initial migration
+- Run `dotnet ef database update` for apply a data migraiton 
+	- Run `dotnet ef database drop` and `dotnet ef migrations remove` to drop the database and the migration and redo
+- Remove functionality for `WeatherForecastController.cs` and `WeatherForecast.cs`
+- Add new controller base `SeedController.cs`
+- Add NuGet package `EPPlus`  search for version 4.5.3.3
+- Add `CitiesController.cs`
+- Add `CountriesController.cs`
+- 

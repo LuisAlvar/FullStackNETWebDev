@@ -16,7 +16,7 @@ namespace WorldCitiesAPI.Data.Models
     /// </summary>
     [Key]
     [Required]
-    public string Id { get; set; }
+    public int Id { get; set; }
 
     /// <summary>
     /// City name (in UTF8 format)
