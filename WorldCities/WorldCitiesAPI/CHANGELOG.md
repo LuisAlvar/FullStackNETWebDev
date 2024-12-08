@@ -37,4 +37,5 @@ The following steps were used to generate this project:
 - Add NuGet package `EPPlus`  search for version 4.5.3.3
 - Add `CitiesController.cs`
 - Add `CountriesController.cs`
+- Modify `Program.cs` add JsonOptions to the AddController set JsonSerializerOptions.WeriteIndented to true
 - 

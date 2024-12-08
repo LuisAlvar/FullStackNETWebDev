@@ -42,4 +42,10 @@ The following steps were used to generate this project:
 - Replace all css files with scss file and modify all ts files with css reference
 - Add new image to `public` folder
 - Modify `home.component.html` to a header, paragraph, and image tag
-
+12/08/2024
+- Run `ng generate component Cities --moduel=app --skip-tests`
+- Modify `nav-menu.component.html` add anchor tag for cities 
+- Modify `app-routing.module.ts`  add path for citiescomponent
+- Create `angular-material.module.ts` file for all of the angualr material imported modules
+- Update `cities.component.html` with new angular material table
+- Update `cities.component.ts` 
