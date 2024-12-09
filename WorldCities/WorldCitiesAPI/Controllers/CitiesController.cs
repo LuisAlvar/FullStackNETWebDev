@@ -23,9 +23,9 @@ public class CitiesController : ControllerBase
   /// </summary>
   /// <returns>Return a list of cities</returns>
   [HttpGet]
-  public async Task<ICollection<City>> GetCities()
+  public async Task<ActionResult<ApiResult<City>>> GetCities(int pageIndex, int pageSize = 10)
   {
-    return await _context.Cities.AsNoTracking().ToListAsync();
+    return await ApiResult<City>.CreateAsync(_context.Cities.AsNoTracking(), pageIndex, pageSize);
   }
 
   /// <summary>

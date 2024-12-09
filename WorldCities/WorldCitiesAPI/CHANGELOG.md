@@ -38,4 +38,5 @@ The following steps were used to generate this project:
 - Add `CitiesController.cs`
 - Add `CountriesController.cs`
 - Modify `Program.cs` add JsonOptions to the AddController set JsonSerializerOptions.WeriteIndented to true
-- 
+- Modify `CitiesController.cs` GetCities method to implement a paging type functionality against the list of cities. 
+- Create new `Data/ApiResult.cs` file
