@@ -52,3 +52,7 @@ The following steps were used to generate this project:
 - Modify `angular-material.module.ts`  import MatPaginatorModule
 - Modify `cities.component.ts` add MatTableDataSource, MatPaginator, and ViewChild
 - Modify `cities.component.html` append the mat-paginator directive
+- Modify `cities.component.ts` adding logic on http param
+- Update `angular-material.module.ts` add MatSort
+- Update `cities.component.ts` implement sorting business logic
+- Update `cities.component.html` to bind the new variables

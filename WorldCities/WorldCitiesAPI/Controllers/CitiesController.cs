@@ -23,9 +23,9 @@ public class CitiesController : ControllerBase
   /// </summary>
   /// <returns>Return a list of cities</returns>
   [HttpGet]
-  public async Task<ActionResult<ApiResult<City>>> GetCities(int pageIndex, int pageSize = 10)
+  public async Task<ActionResult<ApiResult<City>>> GetCities(int pageIndex, int pageSize = 10, string? sortColumn=null, string? sortOrder=null)
   {
-    return await ApiResult<City>.CreateAsync(_context.Cities.AsNoTracking(), pageIndex, pageSize);
+    return await ApiResult<City>.CreateAsync(_context.Cities.AsNoTracking(), pageIndex, pageSize, sortColumn, sortOrder);
   }
 
   /// <summary>

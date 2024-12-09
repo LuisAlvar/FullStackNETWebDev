@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+using System.Linq.Dynamic.Core;
 
 namespace WorldCitiesAPI.Data;
 
@@ -63,6 +65,17 @@ public class ApiResult<T>
     }
   }
 
+  /// <summary>
+  /// Sorting Column name (or null if none set)
+  /// </summary>
+  public string? SortColumn { get; set; }
+
+
+  /// <summary>
+  /// Sorting Order ("ASC","DESC" or null if none set)
+  /// </summary>
+  public string? SortOrder { get; set; }
+
   #endregion
 
   /// <summary>
@@ -72,12 +85,14 @@ public class ApiResult<T>
   /// <param name="count"></param>
   /// <param name="pageIndex"></param>
   /// <param name="pageSize"></param>
-  private ApiResult(List<T> data, int count, int pageIndex, int pageSize) {
+  private ApiResult(List<T> data, int count, int pageIndex, int pageSize, string? sortColumn, string? sortOrder) {
     Data = data;
     PageIndex = pageIndex;
     PageSize = pageSize;
     TotalCount = count;
     TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+    SortColumn = sortColumn;
+    SortOrder = sortOrder;
   }
 
   /// <summary>
@@ -87,12 +102,41 @@ public class ApiResult<T>
   /// <param name="pageIndex"></param>
   /// <param name="pageSize"></param>
   /// <returns></returns>
-  public static async Task <ApiResult<T>> CreateAsync(IQueryable<T> source, int pageIndex, int pageSize)
+  public static async Task <ApiResult<T>> CreateAsync(IQueryable<T> source, int pageIndex, int pageSize, string? sortColumn=null, string? sortOrder=null)
   {
     int count = await source.CountAsync();
+
+    if (!string.IsNullOrEmpty(sortColumn) && IsValidProperty(sortColumn))
+    {
+      sortOrder = !string.IsNullOrEmpty(sortOrder) && sortOrder.ToUpper() == "ASC" ? "ASC" : "DESC";
+      source = source.OrderBy(string.Format("{0} {1}", sortColumn, sortOrder));
+    }
     source = source.Skip(pageIndex * pageSize).Take(pageSize);
+
     List<T> data = await source.ToListAsync();
-    return new ApiResult<T>(data, count, pageIndex, pageSize);
+    return new ApiResult<T>(data, count, pageIndex, pageSize, sortColumn, sortOrder);
   }
+
+  #region Methods
+  /// <summary>
+  /// Method to ensure any sortColumn value is actually from the template class
+  /// <br />
+  /// Checks if the given property name exists to protect against SQL injection attacks.
+  /// </summary>
+  /// <param name="propertyName">A property name of the template class</param>
+  /// <param name="throwExceptionIfNotFound">Option to throw an error if user attempts to use a property not within the template class</param>
+  /// <returns></returns>
+  /// <exception cref="NotSupportedException">Exception to notify user that the given property name is not valided.</exception>
+  public static bool IsValidProperty(string propertyName, bool throwExceptionIfNotFound = true)
+  {
+    var prop = typeof(T).GetProperty(propertyName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+
+    if (prop == null && throwExceptionIfNotFound)
+    {
+      throw new NotSupportedException(string.Format($"ERROR: Property '{propertyName}' does not exist."));
+    }
+    return prop != null;
+  }
+  #endregion
 }
 
