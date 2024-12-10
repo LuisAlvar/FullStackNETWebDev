@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Printing;
 using WorldCitiesAPI.Data;
 using WorldCitiesAPI.Data.Models;
 
@@ -23,9 +25,22 @@ public class CountriesController : ControllerBase
   /// </summary>
   /// <returns>Return a list of countries</returns>
   [HttpGet]
-  public async Task<ICollection<Country>> GetCountries()
+  public async Task<ActionResult<ApiResult<Country>>> GetCountries(
+    int pageIndex,
+    int pageSize = 10,
+    string? sortColumn = null,
+    string? sortOrder = null,
+    string? filterColumn = null,
+    string? filterQuery = null)
   {
-    return await _context.Countries.AsNoTracking().ToListAsync();
+    return await ApiResult<Country>.CreateAsync(
+      _context.Countries.AsNoTracking(),
+      pageIndex,
+      pageSize,
+      sortColumn,
+      sortOrder,
+      filterColumn,
+      filterQuery);
   }
 
   /// <summary>

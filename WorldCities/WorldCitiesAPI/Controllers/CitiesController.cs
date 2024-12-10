@@ -31,7 +31,6 @@ public class CitiesController : ControllerBase
     string? filterColumn=null,
     string? filterQuery=null)
   {
-    _logger.LogInformation($"filter by column {filterColumn} and query {filterQuery}");
     return await ApiResult<City>.CreateAsync(
       _context.Cities.AsNoTracking(),
       pageIndex,

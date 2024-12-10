@@ -56,3 +56,5 @@ The following steps were used to generate this project:
 - Update `angular-material.module.ts` add MatSort
 - Update `cities.component.ts` implement sorting business logic
 - Update `cities.component.html` with mat-form-field and use MatInputModule
+- Run `ng generate component Countries --skip-tests --module=app`
+- New file `countries\country.ts` for country type data
