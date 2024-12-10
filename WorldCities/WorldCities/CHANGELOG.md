@@ -55,4 +55,4 @@ The following steps were used to generate this project:
 - Modify `cities.component.ts` adding logic on http param
 - Update `angular-material.module.ts` add MatSort
 - Update `cities.component.ts` implement sorting business logic
-- Update `cities.component.html` to bind the new variables
+- Update `cities.component.html` with mat-form-field and use MatInputModule

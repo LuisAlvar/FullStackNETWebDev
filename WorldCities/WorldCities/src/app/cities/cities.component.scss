@@ -1,3 +1,14 @@
+
+.city_container {
+  display: flex;
+  flex-direction: column;
+}
+
 table.mat-table {
   width: 100%;
 }
+
+.mat-form-field {
+  font-size: 14px;
+}
+

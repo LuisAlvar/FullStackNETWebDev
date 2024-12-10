@@ -76,6 +76,17 @@ public class ApiResult<T>
   /// </summary>
   public string? SortOrder { get; set; }
 
+  /// <summary>
+  /// Filter Column name (or null if none set)
+  /// </summary>
+  public string? FilterColumn { get; set; }
+
+  /// <summary>
+  /// FilterQuery string
+  /// (to be used within the given FilterColumn)
+  /// </summary>
+  public string? FilterQuery { get; set; }
+
   #endregion
 
   /// <summary>
@@ -85,7 +96,16 @@ public class ApiResult<T>
   /// <param name="count"></param>
   /// <param name="pageIndex"></param>
   /// <param name="pageSize"></param>
-  private ApiResult(List<T> data, int count, int pageIndex, int pageSize, string? sortColumn, string? sortOrder) {
+  private ApiResult(
+    List<T> data,
+    int count,
+    int pageIndex,
+    int pageSize,
+    string? sortColumn,
+    string? sortOrder,
+    string? filterColumn,
+    string? filterQuery) 
+  {
     Data = data;
     PageIndex = pageIndex;
     PageSize = pageSize;
@@ -93,6 +113,8 @@ public class ApiResult<T>
     TotalPages = (int)Math.Ceiling(count / (double)pageSize);
     SortColumn = sortColumn;
     SortOrder = sortOrder;
+    FilterColumn = filterColumn;
+    FilterQuery = filterQuery;
   }
 
   /// <summary>
@@ -102,8 +124,23 @@ public class ApiResult<T>
   /// <param name="pageIndex"></param>
   /// <param name="pageSize"></param>
   /// <returns></returns>
-  public static async Task <ApiResult<T>> CreateAsync(IQueryable<T> source, int pageIndex, int pageSize, string? sortColumn=null, string? sortOrder=null)
+  public static async Task <ApiResult<T>> CreateAsync(
+    IQueryable<T> source,
+    int pageIndex,
+    int pageSize,
+    string? sortColumn=null,
+    string? sortOrder=null,
+    string? filterColumn=null, 
+    string? filterQuery=null)
   {
+
+    if (!string.IsNullOrEmpty(filterColumn) 
+      && !string.IsNullOrEmpty(filterQuery)
+      && IsValidProperty(filterColumn))
+    {
+      source = source.Where(string.Format("{0}.StartsWith(\"{1}\")", filterColumn, filterQuery));
+    }
+
     int count = await source.CountAsync();
 
     if (!string.IsNullOrEmpty(sortColumn) && IsValidProperty(sortColumn))
@@ -114,7 +151,7 @@ public class ApiResult<T>
     source = source.Skip(pageIndex * pageSize).Take(pageSize);
 
     List<T> data = await source.ToListAsync();
-    return new ApiResult<T>(data, count, pageIndex, pageSize, sortColumn, sortOrder);
+    return new ApiResult<T>(data, count, pageIndex, pageSize, sortColumn, sortOrder, filterColumn, filterQuery);
   }
 
   #region Methods
