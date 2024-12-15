@@ -6,7 +6,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
-
+import { ReactiveFormsModule } from '@angular/forms';
+ 
 @NgModule({
   imports: [
     MatToolbarModule,

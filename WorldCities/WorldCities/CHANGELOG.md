@@ -58,3 +58,7 @@ The following steps were used to generate this project:
 - Update `cities.component.html` with mat-form-field and use MatInputModule
 - Run `ng generate component Countries --skip-tests --module=app`
 - New file `countries\country.ts` for country type data
+- Modify `angular-material.moduel.ts` add ReactiveFormsModule from @angular/forms
+- With `app\cities` run `ng generate component CityEdit --skip-tests --module=app --flat`
+- Modify `app-routing.module.ts` add the routing rule for 'city:/id'
+- Modify `cities.component.html` create a routerLink
