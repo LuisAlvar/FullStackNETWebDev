@@ -1,4 +1,15 @@
-.mat-form-field {
-  display: block;
-  margin: 10px 0;
+.city-edit {
+  padding: 20px;
 }
+
+.city-edit > form {
+  display: flex;
+  flex-direction: column;
+}
+
+mat-form-field {
+  display: block;
+}
+
+
+
