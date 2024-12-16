@@ -88,7 +88,9 @@ public class CitiesController : ControllerBase
   {
     var possibleCity = _context.Cities
       .AsNoTracking()
-      .Where(c => c.Name == city.Name && c.Lon == city.Lon && c.Lat == city.Lat).ToList().First();
+      .Where(c => c.Name == city.Name && c.Lon == city.Lon && c.Lat == city.Lat && c.CountryId == city.CountryId)
+      .ToList()
+      .FirstOrDefault();
     if (possibleCity == null)
     {
       _context.Cities.Add(city);

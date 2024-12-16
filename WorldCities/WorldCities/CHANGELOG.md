@@ -62,3 +62,8 @@ The following steps were used to generate this project:
 - With `app\cities` run `ng generate component CityEdit --skip-tests --module=app --flat`
 - Modify `app-routing.module.ts` add the routing rule for 'city:/id'
 - Modify `cities.component.html` create a routerLink
+- Modify `angular-material.module.ts` add FormsModuel and ReactiveFormsModule
+- Modify `city-edit.component.ts` to add dual functionality for editing and creating a new city
+- Modify `app-routing.module.ts`  two different routing rules exist for CityEditComponent
+- Update `city.cs` file add countryId: number; 
+- Modify `angular-material.module.ts` add MatSelectModule @angular/material/select
