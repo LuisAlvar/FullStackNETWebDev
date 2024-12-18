@@ -1,7 +1,7 @@
 import { Component , OnInit } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormGroup, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { City } from './city';
 import { Country } from '../countries/country';
 import { environment } from './../../envrionments/environment';
@@ -35,14 +35,17 @@ export class CityEditComponent implements OnInit{
   // the countries array for the select
   countries?: Country[];
 
-  constructor(private activatedRoute: ActivatedRoute, private router: Router, private http: HttpClient) { }
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
+    private http: HttpClient) { }
 
   ngOnInit() {
     this.form = new FormGroup({
-      name: new FormControl(''),
-      lat: new FormControl(''),
-      lon: new FormControl(''),
-      countryId: new FormControl('')
+      name: new FormControl('', Validators.required),
+      lat: new FormControl('', Validators.required),
+      lon: new FormControl('', Validators.required),
+      countryId: new FormControl('', Validators.required)
     });
     this.loadData();
   }

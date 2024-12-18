@@ -67,3 +67,5 @@ The following steps were used to generate this project:
 - Modify `app-routing.module.ts`  two different routing rules exist for CityEditComponent
 - Update `city.cs` file add countryId: number; 
 - Modify `angular-material.module.ts` add MatSelectModule @angular/material/select
+- Modify `city-edit.component.ts` add Validators from @angular/forms
+- Modify `city-edit.component.html` add <mat-error>

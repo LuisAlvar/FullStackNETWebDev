@@ -8,18 +8,21 @@
     <mat-form-field>
       <mat-label>Name: </mat-label>
       <input matInput formControlName="name" required placeholder="Type a name" />
+      <mat-error *ngIf="this.form.controls['name'].errors?.['required']">Name is required</mat-error>
     </mat-form-field>
 
     <!--Lat-->
     <mat-form-field>
       <mat-label>Latitude: </mat-label>
-      <input matInput formControlName="lat" required placeholder="Insert longitude" />
+      <input matInput formControlName="lat" required placeholder="Insert Latitude" />
+      <mat-error *ngIf="this.form.controls['lat'].errors?.['required']">Latitude is required</mat-error>
     </mat-form-field>
 
     <!--Lon-->
     <mat-form-field>
       <mat-label>Longitude: </mat-label>
-      <input matInput formControlName="lon" required placeholder="Insert longitude"/>
+      <input matInput formControlName="lon" required placeholder="Insert longitude" />
+      <mat-error *ngIf="this.form.controls['lon'].errors?.['required']">Longitude is required</mat-error>
     </mat-form-field>
 
 
@@ -29,6 +32,7 @@
       <mat-select id="countryId" formControlName="countryId">
         <mat-option *ngFor="let country of countries" [value]="country.id">{{country.name}}</mat-option>
       </mat-select>
+      <mat-error *ngIf="this.form.controls['countryId'].errors?.['required']">Please select a Country</mat-error>
     </mat-form-field>
 
     <div>
