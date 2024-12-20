@@ -2,6 +2,8 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Drawing.Printing;
+using System.Linq;
+using System.Linq.Dynamic.Core;
 using WorldCitiesAPI.Data;
 using WorldCitiesAPI.Data.Models;
 
@@ -90,7 +92,7 @@ public class CountriesController : ControllerBase
   {
     var possibleCountry = _context.Countries
       .AsNoTracking()
-      .Where(c => c.Name == country.Name && c.ISO2 == country.ISO2 && c.ISO3 == country.ISO3).ToList().First();
+      .Where(c => c.Name == country.Name && c.ISO2 == country.ISO2 && c.ISO3 == country.ISO3).ToList().FirstOrDefault();
     if (possibleCountry == null)
     {
       _context.Countries.Add(country);
@@ -117,4 +119,12 @@ public class CountriesController : ControllerBase
     return Ok();
   }
 
+  [HttpPost]
+  [Route("IsDupeField")]
+  public bool IsDupeField(int countryId, string fieldName, string fieldValue)
+  {
+    return (ApiResult<Country>.IsValidProperty(fieldName, true)) 
+      ? _context.Countries.Any(string.Format("{0} == @0 && Id != @1", fieldName), fieldValue, countryId)
+      : false;
+  }
 }

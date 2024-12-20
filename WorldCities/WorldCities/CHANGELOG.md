@@ -70,4 +70,6 @@ The following steps were used to generate this project:
 - Modify `city-edit.component.ts` add Validators from @angular/forms
 - Modify `city-edit.component.html` add <mat-error>
 - Modify `city-edit.component.ts` add custom validator for async call to back-end
-- 
+- Run `ng generate component CountryEdit --flat --module=app --skip-tests` within `src/app/countries`
+- Modify `app-routing.module.ts` to contain new routing path for country/:id and country/ for CountryEditComponent
+- Modify `countries.component.html` add button for add new city and add anchor tag to country.name to CountryEditComponet
