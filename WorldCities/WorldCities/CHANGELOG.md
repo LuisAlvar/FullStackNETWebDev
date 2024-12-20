@@ -69,3 +69,5 @@ The following steps were used to generate this project:
 - Modify `angular-material.module.ts` add MatSelectModule @angular/material/select
 - Modify `city-edit.component.ts` add Validators from @angular/forms
 - Modify `city-edit.component.html` add <mat-error>
+- Modify `city-edit.component.ts` add custom validator for async call to back-end
+- 

@@ -43,3 +43,5 @@ The following steps were used to generate this project:
 - Modify `ApiResult.cs` add sorting functionality
 - Modify `CitiesController.cs` update GetCities with sorting functionality.
 - Modify `Data/Country.cs` add JsonPropertyName("iso3") for iso2 and iso3
+- Modify `CitiesController.cs` add isDupeCity functionality
+- 
