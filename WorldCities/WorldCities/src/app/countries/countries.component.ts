@@ -19,6 +19,7 @@ export class CountriesComponent implements OnInit {
   public displayedColumns: string[] = ['id', 'name', 'iso2', 'iso3'];
 
   public countries!: MatTableDataSource<Country>;
+  public loadingCountryData: Country[] = [];
 
   defaultPageIndex: number = 0;
   defaultPageSize: number = 10;
@@ -35,7 +36,14 @@ export class CountriesComponent implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
+    this.loadingDummyData();
     this.loadData();
+  }
+
+  loadingDummyData() {
+    for (var i = 0; i < this.defaultPageSize; i++) {
+      this.loadingCountryData.push({ id: 1, name: "", iso2: "", iso3: "" });
+    }
   }
 
   loadData(query?: string) {
@@ -68,6 +76,7 @@ export class CountriesComponent implements OnInit {
         this.paginator.pageIndex = result.pageIndex;
         this.paginator.pageSize = result.pageSize;
         this.countries = new MatTableDataSource<Country>(result.data);
+        this.loadingCountryData = [];
       }, error => console.error(error));
   }
 

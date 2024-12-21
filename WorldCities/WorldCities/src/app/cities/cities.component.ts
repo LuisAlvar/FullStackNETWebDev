@@ -19,6 +19,7 @@ export class CitiesComponent implements OnInit {
   public displayedColumns: string[] = ['id', 'name', 'lat', 'lon'];
 
   public cities!: MatTableDataSource<City>;
+  public loadingDummyCityData: City[] = [];
 
   defaultPageIndex: number = 0;
   defaultPageSize: number = 10;
@@ -35,7 +36,14 @@ export class CitiesComponent implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
+    this.loadingDummyData();
     this.loadData();
+  }
+
+  loadingDummyData() {
+    for (var i = 0; i < this.defaultPageSize; i++) {
+      this.loadingDummyCityData!.push({ id: 1, name: "", lat: 0, lon: 0, countryId: 0 });
+    }
   }
 
   loadData(query?: string) {
@@ -43,7 +51,6 @@ export class CitiesComponent implements OnInit {
     pageEvent.pageIndex = this.defaultPageIndex;
     pageEvent.pageSize = this.defaultPageSize;
     this.filterQuery = query;
-    console.log(query);
     this.getData(pageEvent);
   }
 
@@ -68,6 +75,7 @@ export class CitiesComponent implements OnInit {
         this.paginator.pageIndex = result.pageIndex;
         this.paginator.pageSize = result.pageSize;
         this.cities = new MatTableDataSource<City>(result.data);
+        this.loadingDummyCityData = [];
       }, error => console.error(error));
   }
 
