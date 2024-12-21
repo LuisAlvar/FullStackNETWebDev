@@ -73,3 +73,5 @@ The following steps were used to generate this project:
 - Run `ng generate component CountryEdit --flat --module=app --skip-tests` within `src/app/countries`
 - Modify `app-routing.module.ts` to contain new routing path for country/:id and country/ for CountryEditComponent
 - Modify `countries.component.html` add button for add new city and add anchor tag to country.name to CountryEditComponet
+- Update `cities.component.ts` and `cities.component.html` adding debouncing calls to the back end
+- Update `countries.component.ts` and `coutnries.component.html` adding debouncing calls to the back end
