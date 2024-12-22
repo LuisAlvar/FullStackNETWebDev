@@ -75,3 +75,11 @@ The following steps were used to generate this project:
 - Modify `countries.component.html` add button for add new city and add anchor tag to country.name to CountryEditComponet
 - Update `cities.component.ts` and `cities.component.html` adding debouncing calls to the back end
 - Update `countries.component.ts` and `coutnries.component.html` adding debouncing calls to the back end
+- Update `country-edit.component.ts` adding getErrors for error handling 
+- Update `country-edit.component.html` adding getErrors for error handling 
+- Run `ng generate component BaseForm --skip-import --skip-tests --inline-template --inline-style --flat` will contain a FormGoup and getError method
+- Modify `country-edit.component.ts` will inherit BaseForm and within constuctor add super();
+- Modify `city-edit.component.ts` add regex validation
+- Modify `base-form.componet.ts` add customMessage as a parameter to getErrors
+- Modfiy `city-edit.component.html` and `country-edit.component.html` adding a custom message to the lat lon and iso2 and iso3
+- 
