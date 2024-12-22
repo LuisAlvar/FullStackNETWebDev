@@ -78,7 +78,7 @@ export class CountryEditComponent extends BaseFormComponent implements OnInit{
 
   onSubmit() {
     var country = (this.id) ? this.country : <Country>{};
-    if (country && !this.aProperyValueIsDupe) {
+    if (country && !this.containsErrors) {
       country.name = this.form.controls['name'].value;
       country.iso2 = this.form.controls['iso2'].value;
       country.iso3 = this.form.controls['iso3'].value;

@@ -96,7 +96,7 @@ export class CityEditComponent extends BaseFormComponent implements OnInit{
 
   onSubmit() {
     var city = (this.id) ? this.city : <City>{};
-    if (city) {
+    if (city && !this.containsErrors) {
       city.name = this.form.controls['name'].value;
       city.lat = +this.form.controls['lat'].value;
       city.lon = +this.form.controls['lon'].value;
