@@ -44,4 +44,6 @@ The following steps were used to generate this project:
 - Modify `CitiesController.cs` update GetCities with sorting functionality.
 - Modify `Data/Country.cs` add JsonPropertyName("iso3") for iso2 and iso3
 - Modify `CitiesController.cs` add isDupeCity functionality
+- Create `Data\CountryDTO.cs` with all of the properties of Country plus a interger count on Cities
+- Modify `CountriesControlller.cs` change the getcountries to return ApiResult<CountryDTO>
 - 

@@ -43,6 +43,11 @@
       <th mat-header-cell *matHeaderCellDef><p class="loading-bar-effect"></p></th>
       <td mat-cell *matCellDef="let country"><p class="loading-bar-effect"></p></td>
     </ng-container>
+    <!-- Tot.Cities column -->
+    <ng-container matColumnDef="totCities">
+      <th mat-header-cell *matHeaderCellDef><p class="loading-bar-effect"></p></th>
+      <td mat-cell *matCellDef="let country"><p class="loading-bar-effect"></p></td>
+    </ng-container>
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
@@ -76,6 +81,11 @@
     <ng-container matColumnDef="iso3">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>ISO3</th>
       <td mat-cell *matCellDef="let country">{{country.iso3}}</td>
+    </ng-container>
+    <!-- Tot.Cities column -->
+    <ng-container matColumnDef="totCities">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Tot. Cities</th>
+      <td mat-cell *matCellDef="let country">{{country.totCities}}</td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>

@@ -16,7 +16,7 @@ import { Country } from './country';
   styleUrl: './countries.component.scss'
 })
 export class CountriesComponent implements OnInit {
-  public displayedColumns: string[] = ['id', 'name', 'iso2', 'iso3'];
+  public displayedColumns: string[] = ['id', 'name', 'iso2', 'iso3','totCities'];
 
   public countries!: MatTableDataSource<Country>;
   public loadingCountryData: Country[] = [];
@@ -41,8 +41,8 @@ export class CountriesComponent implements OnInit {
   }
 
   loadingDummyData() {
-    for (var i = 0; i < this.defaultPageSize; i++) {
-      this.loadingCountryData.push({ id: 1, name: "", iso2: "", iso3: "" });
+    for (var i = 0; i < 4; i++) {
+      this.loadingCountryData.push({ id: 1, name: "", iso2: "", iso3: "" , totcities: 0});
     }
   }
 

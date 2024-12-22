@@ -82,4 +82,6 @@ The following steps were used to generate this project:
 - Modify `city-edit.component.ts` add regex validation
 - Modify `base-form.componet.ts` add customMessage as a parameter to getErrors
 - Modfiy `city-edit.component.html` and `country-edit.component.html` adding a custom message to the lat lon and iso2 and iso3
-- 
+- Modify `country.ts` to contain new property totCities: number
+- Modify `country.component.ts` add totCities to the list of display columns
+- Modify `country.component.hmlt` add the totCities column within the table 

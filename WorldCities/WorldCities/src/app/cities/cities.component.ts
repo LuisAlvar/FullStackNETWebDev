@@ -41,7 +41,7 @@ export class CitiesComponent implements OnInit {
   }
 
   loadingDummyData() {
-    for (var i = 0; i < this.defaultPageSize; i++) {
+    for (var i = 0; i < 4; i++) {
       this.loadingDummyCityData!.push({ id: 1, name: "", lat: 0, lon: 0, countryId: 0 });
     }
   }
