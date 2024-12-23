@@ -16,7 +16,7 @@ import { City } from './city';
 })
 export class CitiesComponent implements OnInit {
 
-  public displayedColumns: string[] = ['id', 'name', 'lat', 'lon'];
+  public displayedColumns: string[] = ['id', 'name', 'lat', 'lon', 'countryName'];
 
   public cities!: MatTableDataSource<City>;
   public loadingDummyCityData: City[] = [];
@@ -42,7 +42,7 @@ export class CitiesComponent implements OnInit {
 
   loadingDummyData() {
     for (var i = 0; i < 4; i++) {
-      this.loadingDummyCityData!.push({ id: 1, name: "", lat: 0, lon: 0, countryId: 0 });
+      this.loadingDummyCityData!.push({ id: 1, name: "", lat: 0, lon: 0, countryId: 0 , countryName: ""});
     }
   }
 

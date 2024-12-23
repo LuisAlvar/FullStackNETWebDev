@@ -23,7 +23,7 @@ public class CitiesController : ControllerBase
   /// </summary>
   /// <returns>Return a list of cities</returns>
   [HttpGet]
-  public async Task<ActionResult<ApiResult<City>>> GetCities(
+  public async Task<ActionResult<ApiResult<CityDTO>>> GetCities(
     int pageIndex,
     int pageSize = 10,
     string? sortColumn=null,
@@ -31,8 +31,16 @@ public class CitiesController : ControllerBase
     string? filterColumn=null,
     string? filterQuery=null)
   {
-    return await ApiResult<City>.CreateAsync(
-      _context.Cities.AsNoTracking(),
+    return await ApiResult<CityDTO>.CreateAsync(
+      _context.Cities.AsNoTracking()
+      .Select(c => new CityDTO() {
+        Id = c.Id,
+        Name = c.Name,
+        Lat = c.Lat,
+        Lon = c.Lon,
+        CountryId = c.CountryId,
+        CountryName = c.Country!.Name
+      }),
       pageIndex,
       pageSize,
       sortColumn,

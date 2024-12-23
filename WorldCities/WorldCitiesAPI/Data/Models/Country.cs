@@ -41,6 +41,7 @@ namespace WorldCitiesAPI.Data.Models
     /// <summary>
     /// A collection of all the cities realted to this country
     /// </summary>
+    [JsonIgnore]
     public ICollection<City>? Cities { get; set; } = null!;
     #endregion
   }

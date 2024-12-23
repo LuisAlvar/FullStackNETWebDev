@@ -46,4 +46,5 @@ The following steps were used to generate this project:
 - Modify `CitiesController.cs` add isDupeCity functionality
 - Create `Data\CountryDTO.cs` with all of the properties of Country plus a interger count on Cities
 - Modify `CountriesControlller.cs` change the getcountries to return ApiResult<CountryDTO>
-- 
+- Create `Data\CityDTO.cs` file 
+- Modify `CitiesController.cs` change the getcities to return ApiResult<CityDTO>
