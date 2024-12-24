@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+//import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -9,6 +9,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { environment } from '../../envrionments/environment';
 import { Country } from './country';
+import { CountryService } from './country.service';
+import { ApiResult } from '../base.service';
 
 @Component({
   selector: 'app-countries',
@@ -33,7 +35,7 @@ export class CountriesComponent implements OnInit {
 
   filterTextChanged: Subject<string> = new Subject<string>();
 
-  constructor(private http: HttpClient) { }
+  constructor(private countryService: CountryService) { }
 
   ngOnInit() {
     this.loadingDummyData();
@@ -57,21 +59,23 @@ export class CountriesComponent implements OnInit {
 
   // Used by mat-paginator element and the ngOnInit()
   getData(event: PageEvent) {
-    var url = environment.baseURL + 'api/Countries';
-    var params = new HttpParams()
-      .set("pageIndex", event.pageIndex.toString())
-      .set("pageSize", event.pageSize.toString())
-      .set("sortColumn", (this.sort) ? this.sort.active : this.defaultSortColumn)
-      .set("sortOrder", (this.sort) ? this.sort.direction : this.defaultSortOrder);
 
-    if (this.filterQuery) {
-      params = params
-        .set("filterColumn", this.defaultFilterColumn)
-        .set("filterQuery", this.filterQuery)
-    }
+    var sortColumn = (this.sort) ? this.sort.active : this.defaultSortColumn;
 
-    this.http.get<any>(url, { params })
-      .subscribe(result => {
+    var sortOrder = (this.sort) ? this.sort.direction : this.defaultSortOrder;
+
+    var filterColumn = (this.filterQuery) ? this.defaultFilterColumn : null;
+
+    var filterQuery = (this.filterQuery) ? this.filterQuery : null;
+
+    this.countryService.getData(
+      event.pageIndex,
+      event.pageSize,
+      sortColumn,
+      sortOrder,
+      filterColumn,
+      filterQuery
+    ).subscribe(result => {
         this.paginator.length = result.totalCount;
         this.paginator.pageIndex = result.pageIndex;
         this.paginator.pageSize = result.pageSize;

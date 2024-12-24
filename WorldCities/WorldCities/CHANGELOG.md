@@ -85,3 +85,6 @@ The following steps were used to generate this project:
 - Modify `country.ts` to contain new property totCities: number
 - Modify `country.component.ts` add totCities to the list of display columns
 - Modify `country.component.hmlt` add the totCities column within the table 
+- Within `src/app` run `ng generate service Base --flat --skip-tests`
+- Modify `base.service.ts` file the class BaseService<T> is abstract and we observable
+- Create `city.service.ts` within src/app/cities folder 
