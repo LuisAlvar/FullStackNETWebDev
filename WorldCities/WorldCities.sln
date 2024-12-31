@@ -7,6 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorldCitiesAPI", "WorldCiti
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "WorldCities", "WorldCities\WorldCities.esproj", "{ADBCEE7D-AF56-415A-A6D4-538F72E770BC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorldCitiesAPI.Tests", "WorldCitiesAPI.Tests\WorldCitiesAPI.Tests.csproj", "{14E5ED9F-0EFF-4B67-991E-EE93A4E941BE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{584C2E31-C240-4069-B518-0EE510196EE0} = {584C2E31-C240-4069-B518-0EE510196EE0}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +28,10 @@ Global
 		{ADBCEE7D-AF56-415A-A6D4-538F72E770BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADBCEE7D-AF56-415A-A6D4-538F72E770BC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ADBCEE7D-AF56-415A-A6D4-538F72E770BC}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{14E5ED9F-0EFF-4B67-991E-EE93A4E941BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14E5ED9F-0EFF-4B67-991E-EE93A4E941BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14E5ED9F-0EFF-4B67-991E-EE93A4E941BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14E5ED9F-0EFF-4B67-991E-EE93A4E941BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
