@@ -88,3 +88,6 @@ The following steps were used to generate this project:
 - Within `src/app` run `ng generate service Base --flat --skip-tests`
 - Modify `base.service.ts` file the class BaseService<T> is abstract and we observable
 - Create `city.service.ts` within src/app/cities folder 
+- Modify `app.component.spec` 
+- Create `/src/app/cities/cities.component.spec.ts` add logic
+- 

@@ -23,7 +23,7 @@
   <table mat-table
          *ngIf="!cities"
          [dataSource]="loadingDummyCityData"
-         class="mat-elevation-z8">
+         class="mat-elevation-z8 load-data-table">
 
     <!-- Id column -->
     <ng-container matColumnDef="id">
@@ -63,7 +63,7 @@
   <table mat-table
          [hidden]="!cities"
          [dataSource]="cities"
-         class="mat-elevation-z8"
+         class="mat-elevation-z8 real-table-data"
          matSort
          (matSortChange)="loadData()"
          [matSortActive]="defaultSortColumn"
