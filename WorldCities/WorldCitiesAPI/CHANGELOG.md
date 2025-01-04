@@ -48,3 +48,17 @@ The following steps were used to generate this project:
 - Modify `CountriesControlller.cs` change the getcountries to return ApiResult<CountryDTO>
 - Create `Data\CityDTO.cs` file 
 - Modify `CitiesController.cs` change the getcities to return ApiResult<CityDTO>
+
+01/04/2025
+- Add Nuget package `Microsoft.AspNetCore.Identity.EntityFrameworkCore`
+- Add Nuget package `Microsoft.AspNetCore.Authentication.JwtBearer`
+- Create `Data/Model/ApplicationUser.cs` inherit IdentityUser
+- Modify `ApplicationDbContext.cs` extended from a different database abstraction base class that supports ASP.NET Core Identity.
+	- Change DbContext to IdentityDbContext<ApplicationUser>
+- Modify `Program.cs` file 
+- Create `Data/LoginRequest.cs` DTO class to hold a user creditentials
+- Create `Data/LoginResult.cs` DTO class to return id data to user 
+- Modify `appsettings.json` adding JWT settings 
+- Create `Data/JwtHandler.cs`
+- Modify `Program.cs` add service to JwtHandler as a Scope service
+- Create `Controllers/AccountController.cs` 
