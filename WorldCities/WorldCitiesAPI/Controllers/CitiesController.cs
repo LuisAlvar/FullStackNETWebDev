@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WorldCitiesAPI.Data;
 using WorldCitiesAPI.Data.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WorldCitiesAPI.Controllers;
 
@@ -69,6 +70,7 @@ public class CitiesController : ControllerBase
   /// <param name="city">Update city  record data</param>
   /// <returns>Return details on how to fetch the new city record via web service</returns>
   [HttpPut("{id}")]
+  [Authorize(Roles = "RegisteredUser")]
   public async Task<IActionResult> PutCity(int id, City city)
   {
     if (id != city.Id) return BadRequest();
@@ -92,6 +94,7 @@ public class CitiesController : ControllerBase
   /// <param name="city">Possible new city record data</param>
   /// <returns>Return details on how to fetch the new city record via web service</returns>
   [HttpPost]
+  [Authorize(Roles = "RegisteredUser")]
   public async Task<ActionResult<City>> PostCity(City city)
   {
     var possibleCity = _context.Cities
@@ -116,6 +119,7 @@ public class CitiesController : ControllerBase
   /// <param name="id">A city record identifier</param>
   /// <returns>Return OK if we sucessfully delete city object. Otherwise NotFound, if such city record does not exist</returns>
   [HttpDelete("{Id}")]
+  [Authorize(Roles = "Administrator")]
   public async Task<ActionResult> DeleteCity(int id)
   {
     var city = await _context.Cities.FindAsync(id);

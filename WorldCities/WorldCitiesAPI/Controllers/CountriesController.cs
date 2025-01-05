@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Drawing.Printing;
@@ -72,6 +73,7 @@ public class CountriesController : ControllerBase
   /// <param name="country">Update country record data</param>
   /// <returns>Return details on how to fetch the new country record via web service</returns>
   [HttpPut("{id}")]
+  [Authorize(Roles = "RegisteredUser")]
   public async Task<IActionResult> PutCountry(int id, Country country)
   {
     if (id != country.Id) return BadRequest();
@@ -95,6 +97,7 @@ public class CountriesController : ControllerBase
   /// <param name="country">Possible new country record data</param>
   /// <returns>Return details on how to fetch the new country record via web service</returns>
   [HttpPost]
+  [Authorize(Roles = "RegisteredUser")]
   public async Task<ActionResult<Country>> PostCity(Country country)
   {
     var possibleCountry = _context.Countries
@@ -117,6 +120,7 @@ public class CountriesController : ControllerBase
   /// <param name="id">A country record identifier</param>
   /// <returns>Return OK if we sucessfully delete country object. Otherwise NotFound, if such country record does not exist</returns>
   [HttpDelete("{Id}")]
+  [Authorize(Roles = "Administrator")]
   public async Task<ActionResult> DeleteCountry(int id)
   {
     var country = await _context.Countries.FindAsync(id);

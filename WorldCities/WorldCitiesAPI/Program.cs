@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog((ctx, lc) => lc
   .ReadFrom.Configuration(ctx.Configuration)
   .WriteTo.MSSqlServer(
-    connectionString: ctx.Configuration.GetConnectionString("DefaultConnnection"),
+    connectionString: ctx.Configuration.GetConnectionString("DefaultConnection"),
     restrictedToMinimumLevel: LogEventLevel.Information,
     sinkOptions: new MSSqlServerSinkOptions {
       TableName = "LogEvents",
@@ -35,7 +35,7 @@ builder.Services.AddSwaggerGen();
 
 // Add ApplicationDbContext and SQL Server support
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-  options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+  options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")!.ToString()));
 
 // Add ASP.NET Core Identity support 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>

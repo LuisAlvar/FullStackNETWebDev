@@ -62,3 +62,6 @@ The following steps were used to generate this project:
 - Create `Data/JwtHandler.cs`
 - Modify `Program.cs` add service to JwtHandler as a Scope service
 - Create `Controllers/AccountController.cs` 
+- Modify `Program.cs` properly set up the JwtBearerMiddleware
+- Modify `SeedController.cs` and Identity features
+- 
