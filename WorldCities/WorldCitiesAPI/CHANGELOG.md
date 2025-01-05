@@ -63,5 +63,8 @@ The following steps were used to generate this project:
 - Modify `Program.cs` add service to JwtHandler as a Scope service
 - Create `Controllers/AccountController.cs` 
 - Modify `Program.cs` properly set up the JwtBearerMiddleware
-- Modify `SeedController.cs` and Identity features
-- 
+- Modify `SeedController.cs` and Identity features, implementation of CreateDefaultUsers and added the Authorized attribute to the class or methods.
+- Run `dotnet ef migrations add "Identity" -o "Data/Migrations"`
+- Run `dotnet ef database update`
+	- options to drop database again run `dotnet ef database drop`
+  - options to database update `dotnet ef database update`
