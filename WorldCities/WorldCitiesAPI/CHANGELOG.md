@@ -68,3 +68,5 @@ The following steps were used to generate this project:
 - Run `dotnet ef database update`
 	- options to drop database again run `dotnet ef database drop`
   - options to database update `dotnet ef database update`
+- Modify `appsettings.json` make sure to have JwtSetting:SecurityKey to contain a GUID or string with more than 256 bytes
+- 

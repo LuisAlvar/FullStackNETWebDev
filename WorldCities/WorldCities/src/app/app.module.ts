@@ -13,6 +13,7 @@ import { CitiesComponent } from './cities/cities.component';
 import { CountriesComponent } from './countries/countries.component';
 import { CityEditComponent } from './cities/city-edit.component';
 import { CountryEditComponent } from './countries/country-edit.component';
+import { LoginComponent } from './auth/login.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { CountryEditComponent } from './countries/country-edit.component';
     CitiesComponent,
     CountriesComponent,
     CityEditComponent,
-    CountryEditComponent
+    CountryEditComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,

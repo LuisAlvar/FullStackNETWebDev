@@ -90,4 +90,13 @@ The following steps were used to generate this project:
 - Create `city.service.ts` within src/app/cities folder 
 - Modify `app.component.spec` 
 - Create `/src/app/cities/cities.component.spec.ts` add logic
-- 
+
+01/06/2025
+- Create a new folder `src/app/auth`
+- Create a new file `login-request.ts` within auth folder
+- Create a new file `login-result.ts` within auth folder
+- Create a new file `auth.service.ts`
+- Run `ng generate component Login --flat --module=app --skip-tests` within the auth folder
+- Modify `app-routing.module.ts` add Login component
+- Modify `nav-menu.component.ts`
+- Modify `nav-menu.component.scss`
