@@ -100,3 +100,7 @@ The following steps were used to generate this project:
 - Modify `app-routing.module.ts` add Login component
 - Modify `nav-menu.component.ts`
 - Modify `nav-menu.component.scss`
+- Modify `auth.service.ts` let our Angular appp know that a vlaid token has been retrieved, and therefore the user has been successfully authenticated.
+- Modify `nav-menu.component.ts` add subject 
+- Modify `nav-menu.component.html` add Login and Logout button with approciate logic
+- Modify `app.component.ts`  
