@@ -104,3 +104,6 @@ The following steps were used to generate this project:
 - Modify `nav-menu.component.ts` add subject 
 - Modify `nav-menu.component.html` add Login and Logout button with approciate logic
 - Modify `app.component.ts`  
+- Create a new file  `auth.interceptor.ts`  within auth folder to intercept all HTTP requests and add the Auth token within the header of the HTTP request.
+- Create a new file `auth.guard.ts` within auth folder
+- Modify `app-routing.module.ts` add this new auth.guard functionality
