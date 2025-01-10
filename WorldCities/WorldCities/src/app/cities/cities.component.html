@@ -10,7 +10,7 @@
   <button mat-flat-button
           color="primary"
           class="btn-add"
-          *ngIf="cities"
+          *ngIf="cities && userRegistered"
           [routerLink]="['/city']">
     Add a new City
   </button>

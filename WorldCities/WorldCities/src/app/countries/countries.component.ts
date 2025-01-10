@@ -4,13 +4,14 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 
 import { environment } from '../../envrionments/environment';
 import { Country } from './country';
 import { CountryService } from './country.service';
 import { ApiResult } from '../base.service';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-countries',
@@ -22,6 +23,8 @@ export class CountriesComponent implements OnInit {
 
   public countries!: MatTableDataSource<Country>;
   public loadingCountryData: Country[] = [];
+
+  public userRegistered: boolean = false;
 
   defaultPageIndex: number = 0;
   defaultPageSize: number = 10;
@@ -35,11 +38,16 @@ export class CountriesComponent implements OnInit {
 
   filterTextChanged: Subject<string> = new Subject<string>();
 
-  constructor(private countryService: CountryService) { }
+  constructor(
+    private countryService: CountryService,
+    private authService: AuthService
+  ) {
+  }
 
   ngOnInit() {
     this.loadingDummyData();
     this.loadData();
+    this.userRegistered = this.authService.isAuthenticated();
   }
 
   loadingDummyData() {

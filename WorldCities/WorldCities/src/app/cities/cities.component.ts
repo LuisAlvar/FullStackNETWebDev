@@ -1,15 +1,16 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 //import { HttpClient, HttpParams } from '@angular/common/http';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { environment } from './../../envrionments/environment';
 import { City } from './city';
 import { CityService } from './city.service';
 import { ApiResult } from '../base.service';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-cities',
@@ -23,6 +24,8 @@ export class CitiesComponent implements OnInit {
   public cities!: MatTableDataSource<City>;
   public loadingDummyCityData: City[] = [];
 
+  public userRegistered: boolean = false;
+
   defaultPageIndex: number = 0;
   defaultPageSize: number = 10;
   defaultFilterColumn: string = "name";
@@ -35,12 +38,18 @@ export class CitiesComponent implements OnInit {
 
   filterTextChanged: Subject<string> = new Subject<string>();
 
-  constructor(private cityService: CityService) { }
+  constructor(
+    private cityService: CityService,
+    private authService: AuthService
+  ) {
+  }
 
   ngOnInit() {
     this.loadingDummyData();
     this.loadData();
+    this.userRegistered = this.authService.isAuthenticated();
   }
+
 
   loadingDummyData() {
     for (var i = 0; i < 4; i++) {

@@ -11,7 +11,6 @@ import { environment } from './../../envrionments/environment';
 import { BaseFormComponent } from '../base-form.component';
 import { CityService } from './city.service';
 import { ApiResult } from '../base.service';
-
 /*
 Utilized component for both editing city data and creating new city data
 */
