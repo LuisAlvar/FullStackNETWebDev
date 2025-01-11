@@ -48,5 +48,53 @@ namespace WorldCitiesAPI.Controllers
 
     }
 
+    [HttpPost("Register")]
+    public async Task<IActionResult> Register(RegisterRequest registerRequest)
+    {
+      // Checking if user via email exists
+      if (await _userManager.FindByEmailAsync(registerRequest.Email) != null)
+      {
+        return BadRequest(new RegisterResult()
+        {
+          Success = false,
+          Message = "Email already taken"
+        });
+      }
+
+      // Checking if user via Username exists
+      if (await _userManager.FindByNameAsync(registerRequest.UserName) != null)
+      {
+        return BadRequest(new RegisterResult()
+        {
+          Success = false,
+          Message = "Username already taken"
+        });
+      }
+
+      // Create a new standard ApplicaitonUser account
+      ApplicationUser newUser = new ApplicationUser()
+      {
+        SecurityStamp = Guid.NewGuid().ToString(),
+        UserName = registerRequest.UserName,
+        Email = registerRequest.Email
+      };
+
+      // Insert the standard user intot the DB
+      await _userManager.CreateAsync(newUser, registerRequest.Password);
+
+      // Default role to any user is the default RegisteredUser role
+      await _userManager.AddToRoleAsync(newUser, "RegisteredUser");
+
+      // Manually confirm the email and remove lockout :: we will add 2FA 
+      newUser.EmailConfirmed = true;
+      newUser.LockoutEnabled = false;
+
+      return Ok(new RegisterResult()
+      {
+        Success = true,
+        Message = "Registered User"
+      });
+    }
+
   }
 }

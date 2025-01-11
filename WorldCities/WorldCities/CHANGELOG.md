@@ -107,3 +107,7 @@ The following steps were used to generate this project:
 - Create a new file  `auth.interceptor.ts`  within auth folder to intercept all HTTP requests and add the Auth token within the header of the HTTP request.
 - Create a new file `auth.guard.ts` within auth folder
 - Modify `app-routing.module.ts` add this new auth.guard functionality
+- Modify `cities.component.ts` add userRegister = this.authService.isAuth()
+- Modify `countries.component.ts` add userRegister = this.authService.isAuth()
+- Run `ng generate component Register --flat --module=app --skip-tests` within the auth folder
+- 

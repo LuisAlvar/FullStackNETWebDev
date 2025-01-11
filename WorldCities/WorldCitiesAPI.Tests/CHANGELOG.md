@@ -5,7 +5,4 @@
 - Create `CitiesController_Test.cs` will hold all of the unit test cases for the cities controller.cs
 - Create `IdentityHelper.cs` this contains helping logic with Microsoft.AspNetCore.Authorization to generate token logic for the test
 - Create `SeendController_Test.cs` mainly contians the logic for test for CreateDefaultUsers with the SeedController
-
-
-
-- 
+- Create `AccountController_Test.cs` we will test Register functionality with RegisterUnknownUser() | it will create a new user and then try to register again for the expected result.

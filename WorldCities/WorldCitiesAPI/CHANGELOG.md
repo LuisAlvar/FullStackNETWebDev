@@ -69,4 +69,6 @@ The following steps were used to generate this project:
 	- options to drop database again run `dotnet ef database drop`
   - options to database update `dotnet ef database update`
 - Modify `appsettings.json` make sure to have JwtSetting:SecurityKey to contain a GUID or string with more than 256 bytes
-- 
+- Create `RegisterRequest.cs` contain the same as LoginRequest but with the added username
+- Create `RegisterResult.cs` similar to loginresult
+- Modify `AccountController.cs` add a new httppost for Register() 
