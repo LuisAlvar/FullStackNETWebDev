@@ -5,6 +5,8 @@ import { Observable, Subject, tap } from 'rxjs';
 import { environment } from './../../envrionments/environment';
 import { LoginRequest } from './login-request';
 import { LoginResult } from './login-result';
+import { RegisterRequest } from './register-request';
+import { RegisterResult } from './register-result';
 
 
 @Injectable({
@@ -41,6 +43,11 @@ export class AuthService {
           this.setAuthStatus(true);
         }
       }));
+  }
+
+  register(item: RegisterRequest): Observable<RegisterResult> {
+    var url = environment.baseURL + "api/Account/Register";
+    return this.http.post<RegisterResult>(url, item);
   }
 
   logout() {

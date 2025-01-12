@@ -27,7 +27,7 @@ namespace WorldCitiesAPI.Controllers
     [HttpPost("Login")]
     public async Task<IActionResult> Login(LoginRequest loginRequest)
     {
-      var user = await _userManager.FindByNameAsync(loginRequest.Email);
+      var user = await _userManager.FindByEmailAsync(loginRequest.Email);
       if (user == null || !await _userManager.CheckPasswordAsync(user, loginRequest.Password)) 
       {
         return Unauthorized(new LoginResult()
@@ -51,15 +51,6 @@ namespace WorldCitiesAPI.Controllers
     [HttpPost("Register")]
     public async Task<IActionResult> Register(RegisterRequest registerRequest)
     {
-      // Checking if user via email exists
-      if (await _userManager.FindByEmailAsync(registerRequest.Email) != null)
-      {
-        return BadRequest(new RegisterResult()
-        {
-          Success = false,
-          Message = "Email already taken"
-        });
-      }
 
       // Checking if user via Username exists
       if (await _userManager.FindByNameAsync(registerRequest.UserName) != null)
@@ -71,9 +62,20 @@ namespace WorldCitiesAPI.Controllers
         });
       }
 
+      // Checking if user via email exists
+      if (await _userManager.FindByEmailAsync(registerRequest.Email) != null)
+      {
+        return BadRequest(new RegisterResult()
+        {
+          Success = false,
+          Message = "Email already taken"
+        });
+      }
+
       // Create a new standard ApplicaitonUser account
       ApplicationUser newUser = new ApplicationUser()
       {
+        Id = Guid.NewGuid().ToString(),
         SecurityStamp = Guid.NewGuid().ToString(),
         UserName = registerRequest.UserName,
         Email = registerRequest.Email
@@ -89,12 +91,13 @@ namespace WorldCitiesAPI.Controllers
       newUser.EmailConfirmed = true;
       newUser.LockoutEnabled = false;
 
+      await _context.SaveChangesAsync();
+
       return Ok(new RegisterResult()
       {
         Success = true,
         Message = "Registered User"
       });
     }
-
   }
 }

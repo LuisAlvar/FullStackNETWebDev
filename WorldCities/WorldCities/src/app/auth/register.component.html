@@ -1,1 +1,55 @@
-<p>register works!</p>
+<div class="register">
+  <h1>Register</h1>
+
+  <mat-card *ngIf="registerResult && registerResult?.message" [ngClass]="{'success-banner': registerResult.success, 'failure-banner': !registerResult.success}">
+    <mat-card-content>
+      <div class="banner-content">
+        <mat-icon [ngClass]="{'success-icon': registerResult.success, 'failure-icon': !registerResult.success}">
+          {{ registerResult.success ? 'check_circle' : 'error' }}
+        </mat-icon>
+        <span [ngClass]="{'success-text': registerResult.success, 'failure-text': !registerResult.success}">
+          {{ registerResult.message }}
+        </span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <!--<p>
+      <mat-error *ngIf="loginResult && !loginResult.success">
+        <strong>ERROR</strong>: {{ loginResult.message }}
+      </mat-error>
+    </p>-->
+    <!--Name-->
+    <mat-form-field>
+      <mat-label>Username:</mat-label>
+      <input matInput formControlName="username" required placeholder="Insert username" />
+      <mat-error *ngFor="let error of getErrors(form.get('username')!,'Username')">{{ error }}</mat-error>
+    </mat-form-field>
+
+    <!--Email-->
+    <mat-form-field>
+      <mat-label>Email:</mat-label>
+      <input matInput formControlName="email" required placeholder="Insert email" />
+      <mat-error *ngFor="let error of getErrors(form.get('email')!,'Email')">{{ error }}</mat-error>
+    </mat-form-field>
+
+    <!--Password-->
+    <mat-form-field>
+      <mat-label>Password:</mat-label>
+      <input matInput type="password" formControlName="password" required placeholder="Insert password" />
+      <mat-error *ngFor="let error of getErrors(form.get('password')!,'Password')">{{ error }}</mat-error>
+    </mat-form-field>
+
+    <div class="uicontrollers">
+      <button mat-flat-button color="primary" type="submit">
+        Create Account
+      </button>
+      <button mat-flat-button color="secondary" [routerLink]="['/']">
+        Cancel
+      </button>
+    </div>
+
+  </form>
+</div>

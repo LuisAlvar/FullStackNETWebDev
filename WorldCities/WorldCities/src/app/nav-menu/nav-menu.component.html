@@ -10,6 +10,9 @@
       Countries
     </a>
     <span class="separator"></span>
+    <a *ngIf="!isLoggedIn" mat-flat-button color="primary" [routerLink]="['/register']">
+      Register
+    </a>
     <a *ngIf="!isLoggedIn" mat-flat-button color="primary" [routerLink]="['/login']">
       Login
     </a>

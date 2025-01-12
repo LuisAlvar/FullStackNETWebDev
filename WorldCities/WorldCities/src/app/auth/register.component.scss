@@ -1,0 +1,94 @@
+.register {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  width: 100%;
+  margin: 10px 0px;
+
+  form {
+    width: 35%;
+  }
+
+  .uicontrollers {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+
+mat-form-field {
+  display: block;
+  margin: 10px 0;
+  max-width: 100%;
+}
+
+.success-banner {
+  background-color: #dff0d8; /* Light green background for success */
+  color: #3c763d; /* Dark green text for success */
+  border-radius: 8px; /* Rounded corners */
+  margin: 5px; /* Some margin around the card */
+  padding: 5px; /* Padding inside the card */
+}
+
+.failure-banner {
+  background-color: #f8d7da; /* Light red background for failure */
+  color: #721c24; /* Dark red text for failure */
+  border-radius: 8px; /* Rounded corners */
+  margin: 5px; /* Some margin around the card */
+  padding: 5px; /* Padding inside the card */
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+}
+
+.success-icon, .failure-icon {
+  margin-right: 8px; /* Space between icon and text */
+}
+
+.success-icon {
+  color: #3c763d; /* Match the icon color with the text for success */
+}
+
+.failure-icon {
+  color: #721c24; /* Match the icon color with the text for failure */
+}
+
+.success-text, .failure-text {
+  font-size: 1.2rem; /* Adjust font size */
+}
+
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 1024px) {
+  .register {
+    justify-content: normal;
+    align-content: normal;
+    width: 100%;
+    margin: 10px 20px;
+
+    form {
+      width: 85%;
+    }
+  }
+
+  mat-card {
+    width: 90%;
+  }
+
+}
+
+/* Mobile Phones */
+@media (max-width: 480px) {
+  .register {
+    margin: 15px 5px;
+
+    form {
+      width: 90%;
+    }
+  }
+}

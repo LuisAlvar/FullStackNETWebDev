@@ -12,7 +12,7 @@ namespace WorldCitiesAPI.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-[Authorize(Roles = "Administrator")]
+//[Authorize(Roles = "Administrator")]
 public class SeedController : ControllerBase
 {
   private readonly ILogger<SeedController> _logger;
@@ -185,6 +185,7 @@ public class SeedController : ControllerBase
       // Create a new admin ApplicationUser account
       var user_Admin = new ApplicationUser()
       {
+        Id = Guid.NewGuid().ToString(),
         SecurityStamp = Guid.NewGuid().ToString(),
         UserName = email_Admin,
         Email = email_Admin,
@@ -212,6 +213,7 @@ public class SeedController : ControllerBase
       // Create a new standard ApplicationUser account
       var user_User = new ApplicationUser()
       {
+        Id = Guid.NewGuid().ToString(),
         SecurityStamp = Guid.NewGuid().ToString(),
         UserName = email_User,
         Email = email_User
