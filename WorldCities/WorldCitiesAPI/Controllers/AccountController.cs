@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WorldCitiesAPI.Data;
@@ -12,40 +13,19 @@ namespace WorldCitiesAPI.Controllers
   {
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly JwtHandler _jwtHandler;
 
     public AccountController(
       ApplicationDbContext context,
       UserManager<ApplicationUser> userManager,
+      SignInManager<ApplicationUser> signInManager,
       JwtHandler jwtHandler) 
     {
       _context = context;
       _userManager = userManager;
+      _signInManager = signInManager;
       _jwtHandler = jwtHandler;
-    }
-
-    [HttpPost("Login")]
-    public async Task<IActionResult> Login(LoginRequest loginRequest)
-    {
-      var user = await _userManager.FindByEmailAsync(loginRequest.Email);
-      if (user == null || !await _userManager.CheckPasswordAsync(user, loginRequest.Password)) 
-      {
-        return Unauthorized(new LoginResult()
-        {
-          Success = false,
-          Message = "Invalid Email or Password"
-        });
-      }
-
-      var secToken = await _jwtHandler.GetTokenAsync(user);
-      var jwt = new JwtSecurityTokenHandler().WriteToken(secToken);
-      return Ok(new LoginResult()
-      {
-        Success = true,
-        Message = "Login successful",
-        Token = jwt
-      });
-
     }
 
     [HttpPost("Register")]
@@ -99,5 +79,68 @@ namespace WorldCitiesAPI.Controllers
         Message = "Registered User"
       });
     }
+
+
+    [HttpPost("Login")]
+    public async Task<IActionResult> Login(LoginRequest loginRequest)
+    {
+      ApplicationUser user = await _userManager.FindByEmailAsync(loginRequest.Email);
+      if (user == null)
+      {
+        return Unauthorized(new LoginResult()
+        {
+          Success = false,
+          Message = "Invalid Email"
+        });
+      }
+
+      bool checkPassword = await _userManager.CheckPasswordAsync(user, loginRequest.Password);
+      if (!checkPassword)
+      {
+        return Unauthorized(new LoginResult()
+        {
+          Success = false,
+          Message = "Invalid Password"
+        });
+      }
+
+      var secToken = await _jwtHandler.GetTokenAsync(user);
+      var jwt = new JwtSecurityTokenHandler().WriteToken(secToken);
+      return Ok(new LoginResult()
+      {
+        UserId = user.Id,
+        Success = true,
+        Message = "Login successful",
+        Token = jwt,
+        TokenExpiration = _jwtHandler._expiresIn,
+        TokenDTStamp = DateTime.UtcNow
+      });
+    }
+
+
+    [HttpPost("Token")]
+    [Authorize(Roles = "RegisteredUser")]
+    public async Task<IActionResult> GenerateNewToken(ActiveUser activeUser)
+    {
+      var user = await _userManager.FindByNameAsync(activeUser.Username);
+      if (user == null) return BadRequest(new TokenRefresh() { NewToken = false, Message = "Member Not Found" });
+      if (user != null && user.Id != activeUser.UserId) return BadRequest(new TokenRefresh() { NewToken = false, Message = "Data does not Match" });
+
+      var userTokens = await _userManager.GetAuthenticationTokenAsync(user!, "Default", "AccessToken");
+      if (userTokens != null) return Ok(new TokenRefresh() { NewToken = false , Message = "Token is still active" });
+
+      var secToken = await _jwtHandler.GetTokenAsync(user!);
+      var jwt = new JwtSecurityTokenHandler().WriteToken(secToken);
+      return Ok(new TokenRefresh()
+      {
+        NewToken = true,
+        Message = "New Active Token",
+        Token = jwt,
+        TokenExpiration = _jwtHandler._expiresIn
+      });
+    }
+
+
+
   }
 }
