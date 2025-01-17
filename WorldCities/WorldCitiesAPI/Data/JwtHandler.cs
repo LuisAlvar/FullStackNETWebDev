@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,11 +14,14 @@ namespace WorldCitiesAPI.Data
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IConfiguration _configuration;
     public readonly double _expiresIn;
+    public readonly double _refreshIn;
+
     public JwtHandler(IConfiguration configuration, UserManager<ApplicationUser> userManager) 
     {
       _configuration = configuration;
       _userManager = userManager;
       _expiresIn = Convert.ToDouble(_configuration["JwtSettings:ExpirationTimeInMinutes"]);
+      _refreshIn = Convert.ToDouble(_configuration["JwtSettings:RefreshTimeInDays"]);
     }
 
     private SigningCredentials GetSigningCredentials()
@@ -27,13 +31,13 @@ namespace WorldCitiesAPI.Data
       return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
     }
 
-    private async Task<List<Claim>> GetClaimsAsync(ApplicationUser user)
+    private async Task<List<Claim>> GetAccessClaimsAsync(ApplicationUser user)
     {
       var claims = new List<Claim>()
       {
         new Claim(ClaimTypes.Name, user.Email),
-        new Claim(JwtRegisteredClaimNames.Sub, user.Email), 
-        new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
+        new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+        new Claim(JwtRegisteredClaimNames.Exp, DateTime.UtcNow.AddMinutes(_expiresIn).ToString())
       };
 
       foreach (var role in await _userManager.GetRolesAsync(user))
@@ -43,17 +47,46 @@ namespace WorldCitiesAPI.Data
       return claims;
     }
 
-    public async Task<JwtSecurityToken> GetTokenAsync(ApplicationUser user)
+    private async Task<List<Claim>> GetRefeshClaimsAsync(ApplicationUser user)
+    {
+      var claims = new List<Claim>()
+      {
+        new Claim(ClaimTypes.Name, user.Email),
+        new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+        new Claim(JwtRegisteredClaimNames.Exp, DateTime.UtcNow.AddDays(_refreshIn).ToString())
+      };
+
+      foreach (var role in await _userManager.GetRolesAsync(user))
+      {
+        claims.Add(new Claim(ClaimTypes.Role, role));
+      }
+      return claims;
+    }
+
+    public async Task<JwtSecurityToken> GetAccessTokenAsync(ApplicationUser user)
     {
       var jwtOptions = new JwtSecurityToken(
         issuer: _configuration["JwtSettings:Issuer"],
         audience: _configuration["JwtSettings:Audience"],
-        claims: await GetClaimsAsync(user),
+        claims: await GetAccessClaimsAsync(user),
         expires: DateTime.Now.AddMinutes(_expiresIn),
         signingCredentials: GetSigningCredentials()
         );
       return jwtOptions;
     }
+
+    public async Task<JwtSecurityToken> GetRefreshTokenAsync(ApplicationUser user)
+    {
+      var jwtOptions = new JwtSecurityToken(
+        issuer: _configuration["JwtSettings:Issuer"],
+        audience: _configuration["JwtSettings:Audience"],
+        claims: await GetRefeshClaimsAsync(user),
+        expires: DateTime.Now.AddMinutes(_refreshIn),
+        signingCredentials: GetSigningCredentials()
+        );
+      return jwtOptions;
+    }
+
 
   }
 }

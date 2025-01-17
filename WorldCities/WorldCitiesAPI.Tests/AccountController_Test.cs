@@ -65,10 +65,10 @@ namespace WorldCitiesAPI.Tests
 
       // Create a IConfiguration mock instance
       var _configuration = new Mock<IConfiguration>();
-      _configuration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:ExpirationTimeInMinutes")]).Returns("3");
+      _configuration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:ExpirationTimeInMinutes")]).Returns("1");
       _configuration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:SecurityKey")]).Returns(Guid.NewGuid().ToString());
       _configuration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:Issuer")]).Returns("MyVeryOwnIssuer");
-      _configuration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:Audience")]).Returns("https://localhost:4200");
+      _configuration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:Audience")]).Returns("https://localhost:8080");
 
 
       // Create the create jwt token handler
@@ -90,7 +90,7 @@ namespace WorldCitiesAPI.Tests
     }
 
     [Fact]
-    public async Task RegisterUnknownUser()
+    public async Task RegisterUser()
     {
       // Create the default roles (if they don't exist yet)
       if (await _roleManager.FindByNameAsync(role_RegisteredUser) == null) await _roleManager.CreateAsync(new IdentityRole(role_RegisteredUser));
@@ -133,7 +133,7 @@ namespace WorldCitiesAPI.Tests
     }
 
     [Fact]
-    public async Task ActiveUserLifeCycle()
+    public async Task LoginUser()
     {
       // Create the default roles (if they don't exist yet)
       if (await _roleManager.FindByNameAsync(role_RegisteredUser) == null) await _roleManager.CreateAsync(new IdentityRole(role_RegisteredUser));
@@ -180,7 +180,63 @@ namespace WorldCitiesAPI.Tests
       Assert.True(objLoginResponse!.Success);
       Assert.True(!string.IsNullOrEmpty(objLoginResponse.Token));
       Assert.True(!string.IsNullOrEmpty(objLoginResponse.UserId));
+    }
+
+    [Fact]
+    public async Task KeepUserLoggedIn()
+    {
+      // Create the default roles (if they don't exist yet)
+      if (await _roleManager.FindByNameAsync(role_RegisteredUser) == null) await _roleManager.CreateAsync(new IdentityRole(role_RegisteredUser));
+      if (await _roleManager.FindByNameAsync(role_Administrator) == null) await _roleManager.CreateAsync(new IdentityRole(role_Administrator));
+
+      // Define the variables for the users we want to test
+      RegisterRequest registerRequest = new RegisterRequest();
+      registerRequest.UserName = "DarkLord";
+      registerRequest.Email = "DarkLord@email.com";
+      registerRequest.Password = "12345@tech$";
+
+      /// Act: Register
+      IActionResult apiResponse = await _accountController.Register(registerRequest);
+      RegisterResult? objRegisterResponse = null!;
+      if (apiResponse is OkObjectResult okRegisterResult)
+      {
+        objRegisterResponse = okRegisterResult.Value as RegisterResult;
+      }
+
+      /// Assert: Register
+      Assert.NotNull(objRegisterResponse);
+      Assert.True(objRegisterResponse!.Success);
+      Assert.True(objRegisterResponse.Message == "Registered User");
+
+      // Verify: Check if user exists in the database
+      var user = await _applicationDbContext.Users.SingleOrDefaultAsync(u => u.Email == registerRequest.Email);
+      Assert.NotNull(user);
+      Assert.Equal(registerRequest.UserName, user!.UserName);
+
+      // Act: Login
+      LoginRequest loginRequest = new LoginRequest();
+      loginRequest.Email = "DarkLord@email.com";
+      loginRequest.Password = "12345@tech$";
+      LoginResult? objLoginResponse = null!;
+
+      apiResponse = await _accountController.Login(loginRequest);
+      if (apiResponse is OkObjectResult okLoginResult)
+      {
+        objLoginResponse = okLoginResult.Value as LoginResult;
+      }
+
+      /// Assert: Login 
+      Assert.NotNull(objLoginResponse);
+      Assert.True(objLoginResponse!.Success);
+      Assert.True(!string.IsNullOrEmpty(objLoginResponse.Token));
+      Assert.True(!string.IsNullOrEmpty(objLoginResponse.UserId));
+      Assert.NotNull(objLoginResponse.TokenExpiration);
+
+      await Task.Delay((int)(objLoginResponse.TokenExpiration! * 60 * 1000));
 
     }
+
+
+
   }
 }

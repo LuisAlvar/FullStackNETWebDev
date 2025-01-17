@@ -1,4 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using Azure;
+using Azure.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +31,7 @@ namespace WorldCitiesAPI.Controllers
     }
 
     [HttpPost("Register")]
-    public async Task<IActionResult> Register(RegisterRequest registerRequest)
+    public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
     {
 
       // Checking if user via Username exists
@@ -82,7 +84,7 @@ namespace WorldCitiesAPI.Controllers
 
 
     [HttpPost("Login")]
-    public async Task<IActionResult> Login(LoginRequest loginRequest)
+    public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
       ApplicationUser user = await _userManager.FindByEmailAsync(loginRequest.Email);
       if (user == null)
@@ -104,40 +106,49 @@ namespace WorldCitiesAPI.Controllers
         });
       }
 
-      var secToken = await _jwtHandler.GetTokenAsync(user);
-      var jwt = new JwtSecurityTokenHandler().WriteToken(secToken);
-      return Ok(new LoginResult()
+
+      var response = new LoginResult()
       {
-        UserId = user.Id,
         Success = true,
         Message = "Login successful",
-        Token = jwt,
-        TokenExpiration = _jwtHandler._expiresIn,
-        TokenDTStamp = DateTime.UtcNow
-      });
+      };
+
+      var secToken = await _jwtHandler.GetAccessTokenAsync(user);
+      var jwtAcc = new JwtSecurityTokenHandler().WriteToken(secToken);
+      response.Tokens.Add(jwtAcc);
+
+      var refToken = await _jwtHandler.GetRefreshTokenAsync(user);
+      var jwtRef = new JwtSecurityTokenHandler().WriteToken(refToken);
+      response.Tokens.Add(jwtRef);
+
+      return Ok(response);
+
     }
 
 
-    [HttpPost("Token")]
+    [HttpPost("Tokens")]
     [Authorize(Roles = "RegisteredUser")]
-    public async Task<IActionResult> GenerateNewToken(ActiveUser activeUser)
+    public async Task<IActionResult> RefreshTokens([FromBody] ActiveUser activeUser)
     {
+
       var user = await _userManager.FindByNameAsync(activeUser.Username);
-      if (user == null) return BadRequest(new TokenRefresh() { NewToken = false, Message = "Member Not Found" });
-      if (user != null && user.Id != activeUser.UserId) return BadRequest(new TokenRefresh() { NewToken = false, Message = "Data does not Match" });
+      if (user == null) return Unauthorized(new TokenRefresh() { NewToken = false, Message = "Member Not Found" });
 
-      var userTokens = await _userManager.GetAuthenticationTokenAsync(user!, "Default", "AccessToken");
-      if (userTokens != null) return Ok(new TokenRefresh() { NewToken = false , Message = "Token is still active" });
-
-      var secToken = await _jwtHandler.GetTokenAsync(user!);
-      var jwt = new JwtSecurityTokenHandler().WriteToken(secToken);
-      return Ok(new TokenRefresh()
+      var response = new TokenRefresh()
       {
         NewToken = true,
-        Message = "New Active Token",
-        Token = jwt,
-        TokenExpiration = _jwtHandler._expiresIn
-      });
+        Message = "New Tokens",
+      };
+
+      var secToken = await _jwtHandler.GetAccessTokenAsync(user);
+      var jwtAcc = new JwtSecurityTokenHandler().WriteToken(secToken);
+      response.Tokens.Add(jwtAcc); // always add the access token first 
+
+      var refToken = await _jwtHandler.GetRefreshTokenAsync(user);
+      var jwtRef = new JwtSecurityTokenHandler().WriteToken(refToken);
+      response.Tokens.Add(jwtRef);
+
+      return Ok(response);
     }
 
 
