@@ -13,10 +13,14 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication;
+using System.IdentityModel.Tokens.Jwt;
+using Azure.Core;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
 
 namespace WorldCitiesAPI.Tests
 {
-  public class AccountController_Test
+  public class AccountController_Test: IClassFixture<WebApplicationFactory<Program>>
   {
     // Setup the default role names
     private const string role_RegisteredUser = "RegisteredUser";
@@ -30,7 +34,9 @@ namespace WorldCitiesAPI.Tests
     private readonly JwtHandler _jwtHandler;
     private readonly SignInManager<ApplicationUser> _signInManager;
 
-    public AccountController_Test()
+    private readonly HttpClient _client;
+
+    public AccountController_Test(WebApplicationFactory<Program> factory)
     {
       /// Arrange:
       /// Create the option instances required by the ApplicationDbContext
@@ -64,7 +70,8 @@ namespace WorldCitiesAPI.Tests
         );
 
       // Create a IConfiguration mock instance
-      var _configuration = new Mock<IConfiguration>();
+      _configuration = new Mock<IConfiguration>();
+      _configuration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:RefreshTimeInDays")]).Returns("1");
       _configuration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:ExpirationTimeInMinutes")]).Returns("1");
       _configuration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:SecurityKey")]).Returns(Guid.NewGuid().ToString());
       _configuration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:Issuer")]).Returns("MyVeryOwnIssuer");
@@ -87,6 +94,8 @@ namespace WorldCitiesAPI.Tests
 
       // Create a SeedController instance
       _accountController = new AccountController(_applicationDbContext, _userManager, _signInManager, _jwtHandler);
+
+      _client = factory.CreateClient();
     }
 
     [Fact]
@@ -178,8 +187,7 @@ namespace WorldCitiesAPI.Tests
       /// Assert: Login 
       Assert.NotNull(objLoginResponse);
       Assert.True(objLoginResponse!.Success);
-      Assert.True(!string.IsNullOrEmpty(objLoginResponse.Token));
-      Assert.True(!string.IsNullOrEmpty(objLoginResponse.UserId));
+      Assert.NotEmpty(objLoginResponse!.Tokens);
     }
 
     [Fact]
@@ -188,6 +196,9 @@ namespace WorldCitiesAPI.Tests
       // Create the default roles (if they don't exist yet)
       if (await _roleManager.FindByNameAsync(role_RegisteredUser) == null) await _roleManager.CreateAsync(new IdentityRole(role_RegisteredUser));
       if (await _roleManager.FindByNameAsync(role_Administrator) == null) await _roleManager.CreateAsync(new IdentityRole(role_Administrator));
+
+      // Create a new JwtSecurityTokenHandler
+      var tokenHandler = new JwtSecurityTokenHandler();
 
       // Define the variables for the users we want to test
       RegisterRequest registerRequest = new RegisterRequest();
@@ -228,11 +239,37 @@ namespace WorldCitiesAPI.Tests
       /// Assert: Login 
       Assert.NotNull(objLoginResponse);
       Assert.True(objLoginResponse!.Success);
-      Assert.True(!string.IsNullOrEmpty(objLoginResponse.Token));
-      Assert.True(!string.IsNullOrEmpty(objLoginResponse.UserId));
-      Assert.NotNull(objLoginResponse.TokenExpiration);
+      Assert.True(objLoginResponse!.Message == "Login successful");
+      Assert.NotEmpty(objLoginResponse.Tokens);
 
-      await Task.Delay((int)(objLoginResponse.TokenExpiration! * 60 * 1000));
+      // Read the Access Token
+      var token = tokenHandler.ReadJwtToken(objLoginResponse.Tokens[0]);
+      // Extract the exp claim within token
+      var expTokenClaim = token.Claims.FirstOrDefault(clm => clm.Type == JwtRegisteredClaimNames.Exp);
+      // Decode the expiration tiem from the exp claim
+      var expTokenTime = long.Parse(expTokenClaim!.Value);
+      var expiryDateTime = DateTimeOffset.FromUnixTimeSeconds(expTokenTime).UtcDateTime;
+
+      // Waiting for the Access Token to expire
+      await Task.Run(async () =>
+      {
+        await PerformTaskUntilAsync();
+        async Task PerformTaskUntilAsync()
+        {
+          while (DateTime.UtcNow < expiryDateTime)
+          {
+            await Task.Delay(1000); // deplay for 1 second
+          }
+        }
+      });
+
+      _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", objLoginResponse.Tokens[0]);
+      var clientResponse = await _client.GetAsync("/Account/Tokens");
+      Assert.True(clientResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized);
+
+      _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", objLoginResponse.Tokens[1]);
+      clientResponse = await _client.GetAsync("/Account/Tokens");
+      Assert.True(clientResponse.StatusCode == System.Net.HttpStatusCode.OK);
 
     }
 
