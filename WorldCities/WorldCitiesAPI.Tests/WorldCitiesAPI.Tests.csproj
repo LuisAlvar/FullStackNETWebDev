@@ -6,11 +6,20 @@
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
+    <ShadowCopyFiles>false</ShadowCopyFiles>
+
   </PropertyGroup>
 
+  
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Copy SourceFiles="$(targetdir)\testhost.deps.json" DestinationFolder="$(OutDir)" />
+  </Target>
+  
+  
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.36" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.36" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
@@ -26,5 +35,9 @@
   <ItemGroup>
     <ProjectReference Include="..\WorldCitiesAPI\WorldCitiesAPI.csproj" />
   </ItemGroup>
+
+
+  
+  
 
 </Project>

@@ -126,13 +126,13 @@ namespace WorldCitiesAPI.Controllers
     }
 
 
-    [HttpPost("Tokens")]
+    [HttpPost("RefreshTokens")]
     [Authorize(Roles = "RegisteredUser")]
     public async Task<IActionResult> RefreshTokens([FromBody] ActiveUser activeUser)
     {
 
       var user = await _userManager.FindByNameAsync(activeUser.Username);
-      if (user == null) return Unauthorized(new TokenRefresh() { NewToken = false, Message = "Member Not Found" });
+      if (user == null) return NotFound(new TokenRefresh() { NewToken = false, Message = "Member Not Found" });
 
       var response = new TokenRefresh()
       {
@@ -151,7 +151,11 @@ namespace WorldCitiesAPI.Controllers
       return Ok(response);
     }
 
-
-
+    [HttpGet("ProtectedEndpoint")]
+    [Authorize]
+    public IActionResult ProtectedEndpoint()
+    {
+      return Ok("You have accessed a protected endpoint.");
+    }
   }
 }

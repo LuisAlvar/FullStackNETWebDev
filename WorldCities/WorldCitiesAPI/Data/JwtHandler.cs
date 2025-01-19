@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -22,6 +23,7 @@ namespace WorldCitiesAPI.Data
       _userManager = userManager;
       _expiresIn = Convert.ToDouble(_configuration["JwtSettings:ExpirationTimeInMinutes"]);
       _refreshIn = Convert.ToDouble(_configuration["JwtSettings:RefreshTimeInDays"]);
+      Debug.WriteLine($"Set value for _expiresIn: {_expiresIn}");
     }
 
     private SigningCredentials GetSigningCredentials()
@@ -81,7 +83,7 @@ namespace WorldCitiesAPI.Data
         issuer: _configuration["JwtSettings:Issuer"],
         audience: _configuration["JwtSettings:Audience"],
         claims: await GetRefeshClaimsAsync(user),
-        expires: DateTime.Now.AddMinutes(_refreshIn),
+        expires: DateTime.Now.AddDays(_refreshIn),
         signingCredentials: GetSigningCredentials()
         );
       return jwtOptions;

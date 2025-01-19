@@ -17,10 +17,16 @@ using System.IdentityModel.Tokens.Jwt;
 using Azure.Core;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
+using Newtonsoft.Json;
+using System.Text;
+using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
+using System.Net;
+using Microsoft.IdentityModel.Tokens;
 
 namespace WorldCitiesAPI.Tests
 {
-  public class AccountController_Test: IClassFixture<WebApplicationFactory<Program>>
+  public class AccountController_Test: IClassFixture<CustomWebApplicationFactory<Program>>
   {
     // Setup the default role names
     private const string role_RegisteredUser = "RegisteredUser";
@@ -35,8 +41,9 @@ namespace WorldCitiesAPI.Tests
     private readonly SignInManager<ApplicationUser> _signInManager;
 
     private readonly HttpClient _client;
+    private readonly CustomWebApplicationFactory<Program> _customWebApplicationFactory;
 
-    public AccountController_Test(WebApplicationFactory<Program> factory)
+    public AccountController_Test(CustomWebApplicationFactory<Program> factory)
     {
       /// Arrange:
       /// Create the option instances required by the ApplicationDbContext
@@ -73,10 +80,10 @@ namespace WorldCitiesAPI.Tests
       _configuration = new Mock<IConfiguration>();
       _configuration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:RefreshTimeInDays")]).Returns("1");
       _configuration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:ExpirationTimeInMinutes")]).Returns("1");
-      _configuration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:SecurityKey")]).Returns(Guid.NewGuid().ToString());
+      _configuration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:SecurityKey")]).Returns("8966efa9-1a25-48fe-9966-d76040bacd85");
       _configuration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:Issuer")]).Returns("MyVeryOwnIssuer");
-      _configuration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:Audience")]).Returns("https://localhost:8080");
-
+      _configuration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:Audience")]).Returns("https://localhost:4200");
+      _configuration.SetupGet(x => x[It.Is<string>(s => s == "ConnectionStrings:DefaultConnection")]).Returns("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TestDb;Integrated Security=True");
 
       // Create the create jwt token handler
       _jwtHandler = new JwtHandler(_configuration.Object, _userManager);
@@ -92,10 +99,10 @@ namespace WorldCitiesAPI.Tests
           new Mock<IUserConfirmation<ApplicationUser>>().Object
           );
 
-      // Create a SeedController instance
+      // Create a Account instance
       _accountController = new AccountController(_applicationDbContext, _userManager, _signInManager, _jwtHandler);
-
-      _client = factory.CreateClient();
+      _customWebApplicationFactory = factory; 
+      _client = _customWebApplicationFactory.CreateClient();  
     }
 
     [Fact]
@@ -191,89 +198,139 @@ namespace WorldCitiesAPI.Tests
     }
 
     [Fact]
-    public async Task KeepUserLoggedIn()
+    public async Task AccessProtectedEndpoint_WithExpiredAccessToken_ShouldRequireRefresh()
     {
-      // Create the default roles (if they don't exist yet)
-      if (await _roleManager.FindByNameAsync(role_RegisteredUser) == null) await _roleManager.CreateAsync(new IdentityRole(role_RegisteredUser));
-      if (await _roleManager.FindByNameAsync(role_Administrator) == null) await _roleManager.CreateAsync(new IdentityRole(role_Administrator));
-
       // Create a new JwtSecurityTokenHandler
       var tokenHandler = new JwtSecurityTokenHandler();
-
-      // Define the variables for the users we want to test
-      RegisterRequest registerRequest = new RegisterRequest();
-      registerRequest.UserName = "DarkLord";
-      registerRequest.Email = "DarkLord@email.com";
-      registerRequest.Password = "12345@tech$";
-
-      /// Act: Register
-      IActionResult apiResponse = await _accountController.Register(registerRequest);
-      RegisterResult? objRegisterResponse = null!;
-      if (apiResponse is OkObjectResult okRegisterResult)
+      // Seed the user data for DarkLord@email.com
+      SeedTestData();
+      LoginRequest loginData = new LoginRequest
       {
-        objRegisterResponse = okRegisterResult.Value as RegisterResult;
-      }
+        Email = "DarkLord@email.com",
+        Password = "12345@Tech$"
+      };
 
-      /// Assert: Register
-      Assert.NotNull(objRegisterResponse);
-      Assert.True(objRegisterResponse!.Success);
-      Assert.True(objRegisterResponse.Message == "Registered User");
+      // Act: Login -----------------------------------------------------
+      var loginContent = new StringContent(JsonConvert.SerializeObject(loginData), Encoding.UTF8, "application/json");
+      var loginResponse = await _client.PostAsync("/api/Account/Login", loginContent);
+      loginResponse.EnsureSuccessStatusCode();
+      LoginResult? loginResult = JsonConvert.DeserializeObject<LoginResult>(await loginResponse.Content.ReadAsStringAsync());
+      // Assert: Login 
+      Assert.True(loginResult!.Success);
+      Assert.Equal("Login successful", loginResult.Message);
+      Assert.Equal(2, loginResult.Tokens.Count);
 
-      // Verify: Check if user exists in the database
-      var user = await _applicationDbContext.Users.SingleOrDefaultAsync(u => u.Email == registerRequest.Email);
-      Assert.NotNull(user);
-      Assert.Equal(registerRequest.UserName, user!.UserName);
+      // Extract the Access and Refresh Token
+      string accessToken = loginResult.Tokens[0];
+      string refreshToken = loginResult.Tokens[1];
+      string expiredAccessToken = ExpireToken(accessToken);
+      // Set the bearer token
+      _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", expiredAccessToken);
+      
+      // Act: Access an UnAuth Endpoint -----------------------------------
+      // Attempt to access a protected endpoint
+      var protectedResponse = await _client.GetAsync("/api/Account/ProtectedEndpoint");
 
-      // Act: Login
-      LoginRequest loginRequest = new LoginRequest();
-      loginRequest.Email = "DarkLord@email.com";
-      loginRequest.Password = "12345@tech$";
-      LoginResult? objLoginResponse = null!;
+      // Assert: Access to an UnAuth Enpoint
+      Assert.Equal(HttpStatusCode.Unauthorized, protectedResponse.StatusCode);
 
-      apiResponse = await _accountController.Login(loginRequest);
-      if (apiResponse is OkObjectResult okLoginResult)
+      // Remove the expired token from headers
+      _client.DefaultRequestHeaders.Authorization = null;
+      // Prepare RefreshTokens request
+      ActiveUser refreshTokensData = new ActiveUser
       {
-        objLoginResponse = okLoginResult.Value as LoginResult;
-      }
+        Username = "DarkLord"
+      };
+      var refreshContent = new StringContent(JsonConvert.SerializeObject(refreshTokensData), Encoding.UTF8, "application/json");
+      _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", refreshToken);
+      
+      // Act: Refresh User Access Token -------------------------------------
+      var refreshResponse = await _client.PostAsync("/api/Account/RefreshTokens", refreshContent);
+      refreshResponse.EnsureSuccessStatusCode();
+      TokenRefresh? refreshResult = JsonConvert.DeserializeObject<TokenRefresh>(await refreshResponse.Content.ReadAsStringAsync());
 
-      /// Assert: Login 
-      Assert.NotNull(objLoginResponse);
-      Assert.True(objLoginResponse!.Success);
-      Assert.True(objLoginResponse!.Message == "Login successful");
-      Assert.NotEmpty(objLoginResponse.Tokens);
+      // Assert that new tokens were issued
+      Assert.True(refreshResult!.NewToken);
+      Assert.Equal("New Tokens", refreshResult.Message);
+      Assert.Equal(2, refreshResult.Tokens.Count);
 
-      // Read the Access Token
-      var token = tokenHandler.ReadJwtToken(objLoginResponse.Tokens[0]);
-      // Extract the exp claim within token
-      var expTokenClaim = token.Claims.FirstOrDefault(clm => clm.Type == JwtRegisteredClaimNames.Exp);
-      // Decode the expiration tiem from the exp claim
-      var expTokenTime = long.Parse(expTokenClaim!.Value);
-      var expiryDateTime = DateTimeOffset.FromUnixTimeSeconds(expTokenTime).UtcDateTime;
+      // Use the new access token to access the protected endpoint
+      var newAccessToken = refreshResult.Tokens[0];
+      // Set the new access token in the Authorization header
+      _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", newAccessToken);
 
-      // Waiting for the Access Token to expire
-      await Task.Run(async () =>
+      // Act: Use new Access Token to access Auth Endpoint
+      var protectedResponseAfterRefresh = await _client.GetAsync("/api/Account/ProtectedEndpoint");
+
+      // Asert: Use new Access Token to access Auth Endpoint
+      protectedResponseAfterRefresh.EnsureSuccessStatusCode();
+      // Assert that the protected endpoint is accessible with the new token
+      Assert.Equal(HttpStatusCode.OK, protectedResponseAfterRefresh.StatusCode);
+    }
+
+    private void SeedTestData()
+    {
+      using (var scope = _customWebApplicationFactory.Services.CreateScope())
       {
-        await PerformTaskUntilAsync();
-        async Task PerformTaskUntilAsync()
+        var scopedServices = scope.ServiceProvider;
+        var db = scopedServices.GetRequiredService<ApplicationDbContext>();
+        var userManager = scopedServices.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager = scopedServices.GetRequiredService<RoleManager<IdentityRole>>();
+
+        // Ensure roles exist
+        var roles = new[] { "RegisteredUser", "Administrator" };
+        foreach (var role in roles)
         {
-          while (DateTime.UtcNow < expiryDateTime)
+          if (!roleManager.RoleExistsAsync(role).Result)
           {
-            await Task.Delay(1000); // deplay for 1 second
+            roleManager.CreateAsync(new IdentityRole(role)).Wait();
           }
         }
-      });
 
-      _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", objLoginResponse.Tokens[0]);
-      var clientResponse = await _client.GetAsync("/Account/Tokens");
-      Assert.True(clientResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized);
+        // Create a test user
+        var testUser = new ApplicationUser
+        {
+          UserName = "DarkLord",
+          Email = "DarkLord@email.com",
+          EmailConfirmed = true
+        };
 
-      _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", objLoginResponse.Tokens[1]);
-      clientResponse = await _client.GetAsync("/Account/Tokens");
-      Assert.True(clientResponse.StatusCode == System.Net.HttpStatusCode.OK);
+        if (userManager.FindByNameAsync(testUser.UserName).Result == null)
+        {
+          var result = userManager.CreateAsync(testUser, "12345@Tech$").Result;
+          if (result.Succeeded)
+          {
+            userManager.AddToRoleAsync(testUser, "RegisteredUser").Wait();
+          }
+          else
+          {
+            throw new Exception("Failed to create test user: " + string.Join(", ", result.Errors));
+          }
+        }
+      }
+    }
 
+    private string ExpireToken(string token)
+    {
+      var tokenHandler = new JwtSecurityTokenHandler();
+      var jwtToken = tokenHandler.ReadJwtToken(token);
+
+      // Create a new token with the same claims but expired
+      var expiredToken = new JwtSecurityToken(
+          issuer: jwtToken.Issuer,
+          audience: jwtToken.Audiences.First(),
+          claims: jwtToken.Claims,
+          notBefore: DateTime.UtcNow.AddHours(-2), // Set Not Before to 2 hours in the past
+          expires: DateTime.UtcNow.AddHours(-1),    // Set Expiration to 1 hour in the past
+          signingCredentials: new SigningCredentials(
+              new SymmetricSecurityKey(Encoding.UTF8.GetBytes("8966efa9-1a25-48fe-9966-d76040bacd85")),
+              SecurityAlgorithms.HmacSha256));
+
+      var expiredTokenString = tokenHandler.WriteToken(expiredToken);
+      return expiredTokenString;
     }
 
 
 
-  }
-}
+  } // END OF CLASS
+}// END OF NAMESPACE

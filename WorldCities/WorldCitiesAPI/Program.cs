@@ -8,23 +8,29 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
 
 // Adding Serilog support
-builder.Host.UseSerilog((ctx, lc) => lc
-  .ReadFrom.Configuration(ctx.Configuration)
-  .WriteTo.MSSqlServer(
-    connectionString: ctx.Configuration.GetConnectionString("DefaultConnection"),
-    restrictedToMinimumLevel: LogEventLevel.Information,
-    sinkOptions: new MSSqlServerSinkOptions {
-      TableName = "LogEvents",
-      AutoCreateSqlTable = true,
-    })
-  .WriteTo.Console()
-);
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+  builder.Host.UseSerilog((ctx, lc) => lc
+    .ReadFrom.Configuration(ctx.Configuration)
+    .WriteTo.MSSqlServer(
+      connectionString: ctx.Configuration.GetConnectionString("DefaultConnection"),
+      restrictedToMinimumLevel: LogEventLevel.Information,
+      sinkOptions: new MSSqlServerSinkOptions
+      {
+        TableName = "LogEvents",
+        AutoCreateSqlTable = true,
+      })
+    .WriteTo.Console()
+  );
+}
+
 
 builder.Services.AddControllers().AddJsonOptions(options => {
   options.JsonSerializerOptions.WriteIndented = true;
@@ -33,9 +39,11 @@ builder.Services.AddControllers().AddJsonOptions(options => {
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
 // Add ApplicationDbContext and SQL Server support
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")!.ToString()));
+
 
 // Add ASP.NET Core Identity support 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -71,10 +79,23 @@ builder.Services.AddAuthentication(opt =>
   };
 });
 
+if (!builder.Environment.IsProduction())
+{
+  Debug.WriteLine("Configuration Settings:");
+  foreach (var kvp in builder.Configuration.AsEnumerable())
+  {
+    Debug.WriteLine($"{kvp.Key}: {kvp.Value}");
+  }
+}
+
 var app = builder.Build();
 
-// adding logging HTTP request middleware support
-app.UseSerilogRequestLogging(); 
+
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+  // adding logging HTTP request middleware support
+  app.UseSerilogRequestLogging();
+}
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
@@ -96,3 +117,5 @@ app.MapControllers();
 app.MapFallbackToFile("/index.html");
 
 app.Run();
+
+public partial class Program { }
