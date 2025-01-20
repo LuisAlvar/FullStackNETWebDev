@@ -55,26 +55,14 @@ namespace WorldCitiesAPI.Tests
       _applicationDbContext = new ApplicationDbContext(options);
 
       // Create a UserManager instance 
-      _userManager = new UserManager<ApplicationUser>(
-        new UserStore<ApplicationUser>(_applicationDbContext),
-        new Mock<IOptions<IdentityOptions>>().Object, 
-        new PasswordHasher<ApplicationUser>(), 
-        new IUserValidator<ApplicationUser>[0],
-        new IPasswordValidator<ApplicationUser>[0],
-        new UpperInvariantLookupNormalizer(),
-        new IdentityErrorDescriber(),
-        new Mock<IServiceProvider>().Object, 
-        new Mock<ILogger<UserManager<ApplicationUser>>>().Object
-        );
+      _userManager = IdentityHelper.GetUserManager<ApplicationUser>(new UserStore<ApplicationUser>(_applicationDbContext));
 
-      // Create a RoleManager instance 
-      _roleManager = new RoleManager<IdentityRole>(
-        new RoleStore<IdentityRole>(_applicationDbContext),
-        new IRoleValidator<IdentityRole>[0],
-        new UpperInvariantLookupNormalizer(),
-        new IdentityErrorDescriber(),
-        new Mock<ILogger<RoleManager<IdentityRole>>>().Object
-        );
+      // Create a RoleManager instance
+      _roleManager = IdentityHelper.GetRoleManager<IdentityRole>(new RoleStore<IdentityRole>(_applicationDbContext));
+
+      // Create SignInManager instance
+      _signInManager = IdentityHelper.GetSignInManager<ApplicationUser>(_userManager);
+
 
       // Create a IConfiguration mock instance
       _configuration = new Mock<IConfiguration>();
@@ -87,17 +75,6 @@ namespace WorldCitiesAPI.Tests
 
       // Create the create jwt token handler
       _jwtHandler = new JwtHandler(_configuration.Object, _userManager);
-
-      // Create SignInManager instance
-      _signInManager = new SignInManager<ApplicationUser>(
-          _userManager,
-          new Mock<IHttpContextAccessor>().Object,
-          new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>().Object,
-          new Mock<IOptions<IdentityOptions>>().Object,
-          new Mock<ILogger<SignInManager<ApplicationUser>>>().Object,
-          new Mock<IAuthenticationSchemeProvider>().Object,
-          new Mock<IUserConfirmation<ApplicationUser>>().Object
-          );
 
       // Create a Account instance
       _accountController = new AccountController(_applicationDbContext, _userManager, _signInManager, _jwtHandler);
@@ -203,7 +180,7 @@ namespace WorldCitiesAPI.Tests
       // Create a new JwtSecurityTokenHandler
       var tokenHandler = new JwtSecurityTokenHandler();
       // Seed the user data for DarkLord@email.com
-      SeedTestData();
+      IdentityHelper.SeedTestUserByDIServices(_customWebApplicationFactory);
       LoginRequest loginData = new LoginRequest
       {
         Email = "DarkLord@email.com",
@@ -211,10 +188,8 @@ namespace WorldCitiesAPI.Tests
       };
 
       // Act: Login -----------------------------------------------------
-      var loginContent = new StringContent(JsonConvert.SerializeObject(loginData), Encoding.UTF8, "application/json");
-      var loginResponse = await _client.PostAsync("/api/Account/Login", loginContent);
-      loginResponse.EnsureSuccessStatusCode();
-      LoginResult? loginResult = JsonConvert.DeserializeObject<LoginResult>(await loginResponse.Content.ReadAsStringAsync());
+      LoginResult? loginResult = await _client.InvokePostAsync<LoginResult>("/api/Account/Login", JsonConvert.SerializeObject(loginData), "application/json");
+
       // Assert: Login 
       Assert.True(loginResult!.Success);
       Assert.Equal("Login successful", loginResult.Message);
@@ -223,8 +198,8 @@ namespace WorldCitiesAPI.Tests
       // Extract the Access and Refresh Token
       string accessToken = loginResult.Tokens[0];
       string refreshToken = loginResult.Tokens[1];
-      string expiredAccessToken = ExpireToken(accessToken);
-      // Set the bearer token
+      // Simualted Expired access token
+      string expiredAccessToken = IdentityHelper.ExpireGivenToken(accessToken);
       _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", expiredAccessToken);
       
       // Act: Access an UnAuth Endpoint -----------------------------------
@@ -241,13 +216,10 @@ namespace WorldCitiesAPI.Tests
       {
         Username = "DarkLord"
       };
-      var refreshContent = new StringContent(JsonConvert.SerializeObject(refreshTokensData), Encoding.UTF8, "application/json");
       _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", refreshToken);
-      
+
       // Act: Refresh User Access Token -------------------------------------
-      var refreshResponse = await _client.PostAsync("/api/Account/RefreshTokens", refreshContent);
-      refreshResponse.EnsureSuccessStatusCode();
-      TokenRefresh? refreshResult = JsonConvert.DeserializeObject<TokenRefresh>(await refreshResponse.Content.ReadAsStringAsync());
+      TokenRefresh? refreshResult = await _client.InvokePostAsync<TokenRefresh>("/api/Account/RefreshTokens", JsonConvert.SerializeObject(refreshTokensData), "application/json");
 
       // Assert that new tokens were issued
       Assert.True(refreshResult!.NewToken);
@@ -267,70 +239,6 @@ namespace WorldCitiesAPI.Tests
       // Assert that the protected endpoint is accessible with the new token
       Assert.Equal(HttpStatusCode.OK, protectedResponseAfterRefresh.StatusCode);
     }
-
-    private void SeedTestData()
-    {
-      using (var scope = _customWebApplicationFactory.Services.CreateScope())
-      {
-        var scopedServices = scope.ServiceProvider;
-        var db = scopedServices.GetRequiredService<ApplicationDbContext>();
-        var userManager = scopedServices.GetRequiredService<UserManager<ApplicationUser>>();
-        var roleManager = scopedServices.GetRequiredService<RoleManager<IdentityRole>>();
-
-        // Ensure roles exist
-        var roles = new[] { "RegisteredUser", "Administrator" };
-        foreach (var role in roles)
-        {
-          if (!roleManager.RoleExistsAsync(role).Result)
-          {
-            roleManager.CreateAsync(new IdentityRole(role)).Wait();
-          }
-        }
-
-        // Create a test user
-        var testUser = new ApplicationUser
-        {
-          UserName = "DarkLord",
-          Email = "DarkLord@email.com",
-          EmailConfirmed = true
-        };
-
-        if (userManager.FindByNameAsync(testUser.UserName).Result == null)
-        {
-          var result = userManager.CreateAsync(testUser, "12345@Tech$").Result;
-          if (result.Succeeded)
-          {
-            userManager.AddToRoleAsync(testUser, "RegisteredUser").Wait();
-          }
-          else
-          {
-            throw new Exception("Failed to create test user: " + string.Join(", ", result.Errors));
-          }
-        }
-      }
-    }
-
-    private string ExpireToken(string token)
-    {
-      var tokenHandler = new JwtSecurityTokenHandler();
-      var jwtToken = tokenHandler.ReadJwtToken(token);
-
-      // Create a new token with the same claims but expired
-      var expiredToken = new JwtSecurityToken(
-          issuer: jwtToken.Issuer,
-          audience: jwtToken.Audiences.First(),
-          claims: jwtToken.Claims,
-          notBefore: DateTime.UtcNow.AddHours(-2), // Set Not Before to 2 hours in the past
-          expires: DateTime.UtcNow.AddHours(-1),    // Set Expiration to 1 hour in the past
-          signingCredentials: new SigningCredentials(
-              new SymmetricSecurityKey(Encoding.UTF8.GetBytes("8966efa9-1a25-48fe-9966-d76040bacd85")),
-              SecurityAlgorithms.HmacSha256));
-
-      var expiredTokenString = tokenHandler.WriteToken(expiredToken);
-      return expiredTokenString;
-    }
-
-
 
   } // END OF CLASS
 }// END OF NAMESPACE
