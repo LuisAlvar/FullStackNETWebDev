@@ -14,8 +14,8 @@ namespace WorldCitiesAPI.Data
   {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IConfiguration _configuration;
-    public readonly double _expiresIn;
-    public readonly double _refreshIn;
+    private readonly double _expiresIn;
+    private readonly double _refreshIn;
 
     public JwtHandler(IConfiguration configuration, UserManager<ApplicationUser> userManager) 
     {
@@ -24,6 +24,8 @@ namespace WorldCitiesAPI.Data
       _expiresIn = Convert.ToDouble(_configuration["JwtSettings:ExpirationTimeInMinutes"]);
       _refreshIn = Convert.ToDouble(_configuration["JwtSettings:RefreshTimeInDays"]);
       Debug.WriteLine($"Set value for _expiresIn: {_expiresIn}");
+      Debug.WriteLine($"Set value for _refreshIn: {_refreshIn}");
+
     }
 
     private SigningCredentials GetSigningCredentials()
@@ -63,6 +65,11 @@ namespace WorldCitiesAPI.Data
         claims.Add(new Claim(ClaimTypes.Role, role));
       }
       return claims;
+    }
+
+    public double GetRefreshTokenExpiration()
+    {
+      return _refreshIn;
     }
 
     public async Task<JwtSecurityToken> GetAccessTokenAsync(ApplicationUser user)

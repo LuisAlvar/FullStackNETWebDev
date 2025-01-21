@@ -62,6 +62,3 @@ export class RegisterComponent extends BaseFormComponent implements OnInit {
 
 }
 
-function isNullOrEmpty(str: string | null | undefined): boolean {
-  return (str ?? '').trim().length === 0;
-}

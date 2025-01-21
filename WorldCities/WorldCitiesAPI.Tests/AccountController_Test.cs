@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Moq;
 using WorldCitiesAPI.Controllers;
 using WorldCitiesAPI.Data.Models;
@@ -9,20 +8,16 @@ using WorldCitiesAPI.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Authentication;
 using System.IdentityModel.Tokens.Jwt;
-using Azure.Core;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Newtonsoft.Json;
-using System.Text;
-using System.Diagnostics;
-using Microsoft.Extensions.DependencyInjection;
 using System.Net;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
+using System.Text;
+
 
 namespace WorldCitiesAPI.Tests
 {
@@ -41,6 +36,7 @@ namespace WorldCitiesAPI.Tests
     private readonly SignInManager<ApplicationUser> _signInManager;
 
     private readonly HttpClient _client;
+    private readonly Mock<HttpContext> _httpContextMock;
     private readonly CustomWebApplicationFactory<Program> _customWebApplicationFactory;
 
     public AccountController_Test(CustomWebApplicationFactory<Program> factory)
@@ -77,9 +73,19 @@ namespace WorldCitiesAPI.Tests
       _jwtHandler = new JwtHandler(_configuration.Object, _userManager);
 
       // Create a Account instance
+      _httpContextMock = new Mock<HttpContext>();
+      var mockResponse = new Mock<HttpResponse>();
+      var mockResponseCookies = new Mock<IResponseCookies>();
+      // set up the mock repsosne to return the mock cookies
+      mockResponse.Setup(r => r.Cookies).Returns(mockResponseCookies.Object);
+      _httpContextMock.Setup(c => c.Response).Returns(mockResponse.Object);
+      // Assign the mock HttpContext to the controller
       _accountController = new AccountController(_applicationDbContext, _userManager, _signInManager, _jwtHandler);
-      _customWebApplicationFactory = factory; 
-      _client = _customWebApplicationFactory.CreateClient();  
+      _accountController.ControllerContext = new ControllerContext { HttpContext = _httpContextMock.Object };
+
+      _accountController = new AccountController(_applicationDbContext, _userManager, _signInManager, _jwtHandler);
+      _customWebApplicationFactory = factory;
+      _client = _customWebApplicationFactory.CreateClient(new WebApplicationFactoryClientOptions { HandleCookies = true}); 
     }
 
     [Fact]
@@ -108,7 +114,7 @@ namespace WorldCitiesAPI.Tests
       /// Assert
       Assert.NotNull(objResponse);
       Assert.True(objResponse!.Success);
-      Assert.True(objResponse.Message == "Registered User");
+      Assert.True(objResponse.Message == "Registered Now. Please proceed to login.");
 
       /// Act:
       apiResponse = await _accountController.Register(registerRequest);
@@ -149,7 +155,7 @@ namespace WorldCitiesAPI.Tests
       /// Assert: Register
       Assert.NotNull(objRegisterResponse);
       Assert.True(objRegisterResponse!.Success);
-      Assert.True(objRegisterResponse.Message == "Registered User");
+      Assert.True(objRegisterResponse.Message == "Registered Now. Please proceed to login.");
 
       // Verify: Check if user exists in the database
       var user = await _applicationDbContext.Users.SingleOrDefaultAsync(u => u.Email == registerRequest.Email);
@@ -171,72 +177,62 @@ namespace WorldCitiesAPI.Tests
       /// Assert: Login 
       Assert.NotNull(objLoginResponse);
       Assert.True(objLoginResponse!.Success);
-      Assert.NotEmpty(objLoginResponse!.Tokens);
+      Assert.NotEmpty(objLoginResponse!.Token);
     }
 
+    /// <summary>
+    /// This will 
+    /// </summary>
+    /// <returns></returns>
     [Fact]
-    public async Task AccessProtectedEndpoint_WithExpiredAccessToken_ShouldRequireRefresh()
+    public async Task AccessProtectedEndpoint_WithExpiredAccessToken_ShouldRequireRefresh_WillFail()
     {
       // Create a new JwtSecurityTokenHandler
       var tokenHandler = new JwtSecurityTokenHandler();
       // Seed the user data for DarkLord@email.com
       IdentityHelper.SeedTestUserByDIServices(_customWebApplicationFactory);
-      LoginRequest loginData = new LoginRequest
-      {
-        Email = "DarkLord@email.com",
-        Password = "12345@Tech$"
-      };
 
-      // Act: Login -----------------------------------------------------
-      LoginResult? loginResult = await _client.InvokePostAsync<LoginResult>("/api/Account/Login", JsonConvert.SerializeObject(loginData), "application/json");
+      // Arrange
+      var loginModel = new { Email = "DarkLord@email.com", Password = "12345@Tech$" };
+      var loginContent = new StringContent(JsonConvert.SerializeObject(loginModel), System.Text.Encoding.UTF8, "application/json");
 
-      // Assert: Login 
-      Assert.True(loginResult!.Success);
-      Assert.Equal("Login successful", loginResult.Message);
-      Assert.Equal(2, loginResult.Tokens.Count);
+      // Act: Login to obtain tokens
+      var loginResponse = await _client.PostAsync("/api/Account/Login", loginContent);
+      loginResponse.EnsureSuccessStatusCode();
+      var loginResult = JsonConvert.DeserializeObject<LoginResult>(await loginResponse.Content.ReadAsStringAsync());
+      Assert.True(loginResult.Success);
+      Assert.NotNull(loginResult.Token);
 
-      // Extract the Access and Refresh Token
-      string accessToken = loginResult.Tokens[0];
-      string refreshToken = loginResult.Tokens[1];
-      // Simualted Expired access token
-      string expiredAccessToken = IdentityHelper.ExpireGivenToken(accessToken);
+      // Ensure the refresh token cookie is set
+      Assert.True(loginResponse.Headers.TryGetValues("Set-Cookie", out var setCookieValues));
+      Assert.Contains(setCookieValues, value => value.Contains("refreshToken"));
+
+      // Simulate expired access token
+      var expiredAccessToken = IdentityHelper.ExpireGivenToken(loginResult.Token);
       _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", expiredAccessToken);
-      
-      // Act: Access an UnAuth Endpoint -----------------------------------
-      // Attempt to access a protected endpoint
-      var protectedResponse = await _client.GetAsync("/api/Account/ProtectedEndpoint");
 
-      // Assert: Access to an UnAuth Enpoint
+      // Act: Access protected endpoint with expired token
+      var protectedResponse = await _client.GetAsync("/api/Account/ProtectedEndpoint");
       Assert.Equal(HttpStatusCode.Unauthorized, protectedResponse.StatusCode);
 
-      // Remove the expired token from headers
-      _client.DefaultRequestHeaders.Authorization = null;
-      // Prepare RefreshTokens request
-      ActiveUser refreshTokensData = new ActiveUser
+      // Act: Refresh tokens (Note: No need to include refresh token in request body as it's in the cookie)
+      ActiveUser activeUser = new ActiveUser
       {
-        Username = "DarkLord"
+        Email = loginModel.Email
       };
-      _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", refreshToken);
 
-      // Act: Refresh User Access Token -------------------------------------
-      TokenRefresh? refreshResult = await _client.InvokePostAsync<TokenRefresh>("/api/Account/RefreshTokens", JsonConvert.SerializeObject(refreshTokensData), "application/json");
+      var refreshResponse = await _client.PostAsync("/api/Account/RefreshTokens", new StringContent(JsonConvert.SerializeObject(activeUser), System.Text.Encoding.UTF8, "application/json"));
+      refreshResponse.EnsureSuccessStatusCode();
+      var refreshResult = JsonConvert.DeserializeObject<TokenRefresh>(await refreshResponse.Content.ReadAsStringAsync());
+      Assert.True(refreshResult.NewToken);
+      Assert.NotNull(refreshResult.Token);
 
-      // Assert that new tokens were issued
-      Assert.True(refreshResult!.NewToken);
-      Assert.Equal("New Tokens", refreshResult.Message);
-      Assert.Equal(2, refreshResult.Tokens.Count);
-
-      // Use the new access token to access the protected endpoint
-      var newAccessToken = refreshResult.Tokens[0];
-      // Set the new access token in the Authorization header
-      _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", newAccessToken);
-
-      // Act: Use new Access Token to access Auth Endpoint
+      // Use new access token to access protected endpoint
+      _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", refreshResult.Token);
       var protectedResponseAfterRefresh = await _client.GetAsync("/api/Account/ProtectedEndpoint");
 
-      // Asert: Use new Access Token to access Auth Endpoint
+      // Assert: Access protected endpoint with new token
       protectedResponseAfterRefresh.EnsureSuccessStatusCode();
-      // Assert that the protected endpoint is accessible with the new token
       Assert.Equal(HttpStatusCode.OK, protectedResponseAfterRefresh.StatusCode);
     }
 

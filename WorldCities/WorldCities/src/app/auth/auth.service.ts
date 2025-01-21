@@ -8,25 +8,46 @@ import { LoginResult } from './login-result';
 import { RegisterRequest } from './register-request';
 import { RegisterResult } from './register-result';
 
+import { jwtDecode } from 'jwt-decode';
+import { parseISO } from 'date-fns';
+import { isNullOrEmpty } from '../utils/Strings';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
 
-  private tokenKey: string = "token";
+  private strKeyAccessToken: string = "atoken";
+  private strKeyExpAccessToken: string = "aexptoken";
+  private strKeyRefreshToken: string = "rtoken";
+
   private _authStatus = new Subject<boolean>();
   public authStatus = this._authStatus.asObservable();
 
-  constructor(protected http: HttpClient) { }
+  public email?: string
 
+  constructor(private http: HttpClient) { }
 
   isAuthenticated(): boolean {
-    return this.getToken() != null;
+    return this.getAccessToken() != null;
   }
 
-  getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
+  getAccessToken(): string | null {
+    return localStorage.getItem(this.strKeyAccessToken);
+  }
+
+  getAccessTokenExp(): Date | null {
+    var strDateTime = localStorage.getItem(this.strKeyExpAccessToken) as string ?? "";
+    if (isNullOrEmpty(strDateTime)) return null;
+    var result = parseISO(strDateTime);
+    return result;
+  }
+
+  refreshToken(): Observable<any> {
+    return this.http.post("api/Account/RefreshTokens", { email: this.email })
+      .pipe(tap((response: any) => {
+        this.processAccessToken(response.Token);
+      }));
   }
 
   init(): void {
@@ -39,8 +60,9 @@ export class AuthService {
       .post<LoginResult>(url, item)
       .pipe(tap(loginResult => {
         if (loginResult.success && loginResult.token) {
-          localStorage.setItem(this.tokenKey, loginResult.token);
+          this.processAccessToken(loginResult.token);
           this.setAuthStatus(true);
+          this.email = item.email;
         }
       }));
   }
@@ -51,7 +73,8 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.strKeyAccessToken);
+    localStorage.removeItem(this.strKeyExpAccessToken);
     this.setAuthStatus(false);
   }
 
@@ -59,4 +82,27 @@ export class AuthService {
     this._authStatus.next(isAuthenticated);
   }
 
+  private processAccessToken(tokens: string): void
+  {
+    // Set the Access Token to local store
+    const currentTime = new Date();
+    localStorage.setItem(this.strKeyAccessToken, tokens[0]);
+    // Add the expired time to the local store as while 
+    const decodedAccessToken = this.DecodeAnyToken(tokens[0]);
+    if (decodedAccessToken) {
+      const expTime = decodedAccessToken.exp;
+      const expirDateTime = new Date(currentTime.getTime() + (expTime * 1000));
+      localStorage.setItem(this.strKeyExpAccessToken, expirDateTime.toISOString())
+    }
+  }
+
+  private DecodeAnyToken(token: string): any {
+    try {
+      const decodedToken = jwtDecode(token);
+      return decodedToken;
+    } catch (e) {
+      console.error('Invalid token', e);
+      return null;
+    }
+  }
 }

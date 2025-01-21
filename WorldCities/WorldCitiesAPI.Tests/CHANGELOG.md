@@ -7,4 +7,7 @@
 - Create `SeendController_Test.cs` mainly contians the logic for test for CreateDefaultUsers with the SeedController
 - Create `AccountController_Test.cs` we will test Register functionality with RegisterUnknownUser() | it will create a new user and then try to register again for the expected result.
 - Modify `WorldCitiesAPI.Test` as of result of using WebApplicationFactory within the AccountController_Tests
-	- _
+- Modify `IdentityHelper.cs` to help create moq version of SignInManager, UserManager, and RoleManager
+- Create `HttpClientExtensions` to extend the functionality of HttpClient for PostAsync to reduce code custer
+- Create `CustomWebApplicationFactory` to create a in-memory test server to test expired token and AuthorizedAttribute
+- 

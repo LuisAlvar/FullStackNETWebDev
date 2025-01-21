@@ -4,6 +4,6 @@
   {
     public bool NewToken { get; set; }
     public string Message { get; set; } = null!;
-    public List<string> Tokens { get; set; } = new List<string>();
+    public string? Token { get; set; }
   }
 }

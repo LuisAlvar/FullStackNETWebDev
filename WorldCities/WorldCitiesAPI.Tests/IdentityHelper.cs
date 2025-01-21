@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using Newtonsoft.Json;
 
 namespace WorldCitiesAPI.Tests
 {
@@ -132,7 +133,6 @@ namespace WorldCitiesAPI.Tests
         }
       }
     }
-
 
     /// <summary>
     /// 

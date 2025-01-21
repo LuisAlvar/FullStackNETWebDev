@@ -59,6 +59,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 builder.Services.AddScoped<JwtHandler>();
 
+// Configure JWT Authentication 
 builder.Services.AddAuthentication(opt =>
 {
   opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -77,7 +78,21 @@ builder.Services.AddAuthentication(opt =>
     ValidAudience = builder.Configuration["JwtSettings:Audience"],
     IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecurityKey"]))
   };
+
+  options.Events = new JwtBearerEvents
+  {
+    OnMessageReceived = context =>
+    {
+      context.Request.Cookies.TryGetValue("refreshToken", out var refreshToken);
+      if (!string.IsNullOrEmpty(refreshToken))
+      {
+        context.Token = refreshToken;
+      }
+      return Task.CompletedTask;
+    }
+  };
 });
+
 
 if (!builder.Environment.IsProduction())
 {

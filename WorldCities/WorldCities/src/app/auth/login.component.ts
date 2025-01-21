@@ -39,8 +39,6 @@ export class LoginComponent extends BaseFormComponent implements OnInit{
     loginRequest.email = this.form.controls['email'].value;
     loginRequest.password = this.form.controls["password"].value;
 
-
-
     this.authService
       .login(loginRequest)
       .subscribe(result => {

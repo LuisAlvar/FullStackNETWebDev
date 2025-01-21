@@ -2,7 +2,6 @@
 {
   public class LoginResult
   {
-
     /// <summary>
     /// TRUE if the login attempt is successful, FALSE otherwise.
     /// </summary>
@@ -16,6 +15,6 @@
     /// <summary>
     /// The JWT token if the login attempt is successful, or NULL if not
     /// </summary>
-    public List<string> Tokens {  get; set; } = new List<string>();
+    public string? Token { get; set; }
   }
 }

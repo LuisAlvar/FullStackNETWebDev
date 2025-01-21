@@ -110,4 +110,10 @@ The following steps were used to generate this project:
 - Modify `cities.component.ts` add userRegister = this.authService.isAuth()
 - Modify `countries.component.ts` add userRegister = this.authService.isAuth()
 - Run `ng generate component Register --flat --module=app --skip-tests` within the auth folder
+
+- 01/20/2025
+- Run `npm cache clean --force; rm -rf node_modules; rm package-lock.json; npm install;`
+- Run `npm install jwt-decode`
+- Run `npm install date-fns`
+- Modify `auth.service.ts` add cookie functionality to save the Refresh token
 - 
