@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject, tap } from 'rxjs';
 
@@ -9,8 +9,9 @@ import { RegisterRequest } from './register-request';
 import { RegisterResult } from './register-result';
 
 import { jwtDecode } from 'jwt-decode';
-import { parseISO } from 'date-fns';
 import { isNullOrEmpty } from '../utils/Strings';
+import { CookieService } from 'ngx-cookie-service';
+
 
 @Injectable({
   providedIn: 'root',
@@ -19,14 +20,13 @@ export class AuthService {
 
   private strKeyAccessToken: string = "atoken";
   private strKeyExpAccessToken: string = "aexptoken";
-  private strKeyRefreshToken: string = "rtoken";
 
   private _authStatus = new Subject<boolean>();
   public authStatus = this._authStatus.asObservable();
 
   public email?: string
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private cookieService: CookieService) { }
 
   isAuthenticated(): boolean {
     return this.getAccessToken() != null;
@@ -39,7 +39,7 @@ export class AuthService {
   getAccessTokenExp(): Date | null {
     var strDateTime = localStorage.getItem(this.strKeyExpAccessToken) as string ?? "";
     if (isNullOrEmpty(strDateTime)) return null;
-    var result = parseISO(strDateTime);
+    var result = new Date(strDateTime);
     return result;
   }
 
@@ -75,6 +75,7 @@ export class AuthService {
   logout() {
     localStorage.removeItem(this.strKeyAccessToken);
     localStorage.removeItem(this.strKeyExpAccessToken);
+    this.cookieService.delete('refreshToken', '/', 'localhost');
     this.setAuthStatus(false);
   }
 
@@ -86,13 +87,14 @@ export class AuthService {
   {
     // Set the Access Token to local store
     const currentTime = new Date();
-    localStorage.setItem(this.strKeyAccessToken, tokens[0]);
+    localStorage.setItem(this.strKeyAccessToken, tokens);
     // Add the expired time to the local store as while 
-    const decodedAccessToken = this.DecodeAnyToken(tokens[0]);
+    const decodedAccessToken = this.DecodeAnyToken(tokens);
     if (decodedAccessToken) {
       const expTime = decodedAccessToken.exp;
-      const expirDateTime = new Date(currentTime.getTime() + (expTime * 1000));
-      localStorage.setItem(this.strKeyExpAccessToken, expirDateTime.toISOString())
+      const expirDateTime = new Date(expTime * 1000);
+      console.log("This is the expired date for access token: " + expirDateTime.toUTCString());
+      localStorage.setItem(this.strKeyExpAccessToken, expirDateTime.toUTCString())
     }
   }
 

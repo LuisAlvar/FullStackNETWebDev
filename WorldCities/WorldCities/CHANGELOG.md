@@ -113,6 +113,7 @@ The following steps were used to generate this project:
 
 - 01/20/2025
 - Run `npm cache clean --force; rm -rf node_modules; rm package-lock.json; npm install;`
+- Run `npm install ngx-cookie-service@18.0.0`
 - Run `npm install jwt-decode`
 - Run `npm install date-fns`
 - Modify `auth.service.ts` add cookie functionality to save the Refresh token

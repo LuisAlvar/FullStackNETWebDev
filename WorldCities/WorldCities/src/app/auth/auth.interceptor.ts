@@ -45,7 +45,6 @@ export class AuthInterceptor implements HttpInterceptor {
       }));
   }
 
-
   private getProperToken(): string | null
   {
     // Use this code block to determine what token to use and whether we need to refresh the tokens.

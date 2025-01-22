@@ -5,6 +5,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { RegisterResult } from './register-result';
 import { RegisterRequest } from './register-request';
 import { AuthService } from './auth.service';
+import { isNullOrEmpty } from '../utils/Strings';
 
 @Component({
   selector: 'app-register',
