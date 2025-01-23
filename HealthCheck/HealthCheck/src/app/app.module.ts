@@ -14,6 +14,9 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HealthCheckComponent } from './health-check/health-check.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -28,7 +31,13 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     AppRoutingModule,
     MatButtonModule,
     MatIconModule,
-    MatToolbarModule
+    MatToolbarModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the app is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: "registerWhenStable:30000"
+    })
   ],
   providers: [
     provideAnimationsAsync()

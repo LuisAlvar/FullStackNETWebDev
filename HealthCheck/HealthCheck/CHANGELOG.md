@@ -65,3 +65,26 @@ The following steps occurs after project was generated for our purpose:
   - will need to change all .css files to scss file extensions
   - along with modifying all of the ts file with new style file extension
 - Modify `styles.scss` redesign table 
+- Run `npm install @angular/service-worker@18.2.13`
+- Modify `angular.json` > projects > HealthCheck > architect > build > options 
+  `"serviceWorker": true,
+   "ngswConfigPath": "ngsw-config.json"
+   `
+- Modify `app.module.ts` file adding ServiceWorkerModule and environment
+- Modify `index.html` 
+`
+  <!-- PWA required files  -->
+  <link rel="manifest" href="manifest.webmanifest"/>
+  <meta name="theme-color" content="#1976d2"/>
+`
+-  Generate a PNG picture within `https://dummyimage.com/` HC the logo for this project
+-  Fill out the form within `https://manifest-gen.netlify.app/` and upload the logo png picture and click on Submit
+- Move the `manifest.json` file to the src folder 
+- Move all of the content within /icons/ to public/icons folder 
+- Modify `manifest.json` file change the src value for each image to the correct path within our Angular project
+- Rename `manifest.json` to `manifest.webmanifest` since that's the name defined by the Web App Manifest W3C specs
+- Modify `angular.json` add 'src/manifest.webmanifest' within two location as an assets (its an array)
+  - First location is projects > HealtCheck > architect > build > options > assets
+  - Second location is projects > HealthCheck > architect > test > options > assets
+- Create a new file `ngsw-config.json` at the root of the folder. 
+- 

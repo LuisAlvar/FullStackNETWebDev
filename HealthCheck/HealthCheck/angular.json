@@ -35,13 +35,16 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+              "src/manifest.webmanifest"
             ],
             "styles": [
               "@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "serviceWorker": true,
+            "ngswConfigPath": "ngsw-config.json"
           },
           "configurations": {
             "production": {
@@ -97,7 +100,8 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+              "src/manifest.webmanifest"
             ],
             "styles": [
               "@angular/material/prebuilt-themes/indigo-pink.css",
