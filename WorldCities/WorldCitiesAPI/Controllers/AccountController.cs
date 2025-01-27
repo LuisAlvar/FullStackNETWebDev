@@ -166,12 +166,5 @@ namespace WorldCitiesAPI.Controllers
       this.Response.Cookies.Append("refreshToken", jwtRef, cookieOptions);
       return Ok(response);
     }
-
-    [HttpGet("ProtectedEndpoint")]
-    [Authorize]
-    public IActionResult ProtectedEndpoint()
-    {
-      return Ok("You have accessed a protected endpoint.");
-    }
   }
 }

@@ -117,4 +117,12 @@ The following steps were used to generate this project:
 - Run `npm install jwt-decode`
 - Run `npm install date-fns`
 - Modify `auth.service.ts` add cookie functionality to save the Refresh token
-- 
+- Run `ng add @angular/pwa@18.0.0` at the root folder - with add @angular/service worker package 
+- Modify `package.json` add "angular-connection-service" version 18.0.0
+- Run `npm install --force`
+- Update `app.module.ts` add the followign components from angular-connection-service ConnectionServiceModule, ConnectionserviceOptions, ConnecitonServiceOptionsToken
+  - add ConnectionServiceModule as an import 
+  - add provider as ConnectionServiceOptionstoke, and as value ConnectionServiceOptions
+- Update  `app.component.ts` a good place to implement it would be here , which contains all of our components, regardless of the front-end route picked by the user
+- Update `app.commponent.html` add a div type banner with a message of offline with *ngIf
+- Update `app.component.scss` add styling to this new banner tye message

@@ -73,3 +73,7 @@ The following steps were used to generate this project:
 - Create `RegisterResult.cs` similar to loginresult
 - Modify `AccountController.cs` add a new httppost for Register() and Id = Guid.NewGuid().ToString() to ApplicationUser
 - Modify `SeedController.cs` file add Id = Guid.NewGuid().ToString() to ApplicationUser
+
+- Modify `AccountController.cs` convert the ProtectedEndpoint method to a minimual api method within `Program.cs`
+- Modify `Program.cs` add a minimal api method for /api/heartbeat
+- 

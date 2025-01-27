@@ -129,6 +129,12 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapGet("/api/Account/ProtectedEndpoint", () => {
+  return Results.Ok("You have accessed a protected endpoint.");
+}).RequireAuthorization();
+
+app.MapMethods("/api/heartbeat", new[] { "HEAD" }, () => Results.Ok());
+
 app.MapFallbackToFile("/index.html");
 
 app.Run();

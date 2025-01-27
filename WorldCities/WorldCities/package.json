@@ -23,6 +23,8 @@
     "@angular/platform-browser": "^18.0.0",
     "@angular/platform-browser-dynamic": "^18.0.0",
     "@angular/router": "^18.0.0",
+    "@angular/service-worker": "^18.0.0",
+    "angular-connection-service": "13.0.1",
     "date-fns": "^4.1.0",
     "jest-editor-support": "*",
     "jwt-decode": "^4.0.0",
