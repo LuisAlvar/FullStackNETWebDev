@@ -27,3 +27,10 @@ The following steps occurs after project was generated for our purpose:
 	- Pass a custom message to the type of HealthCheckResult
 - Update `Program.cs` add more AddChecks
 - Add new file `CustomHealthCheckOptions.cs` under HealthCheck namespace for a more granular output with JSON structure. 
+- Modify `Program.cs` add a minial api method for /api/heartbeat
+- Modify `appsettings.json` add AllowedCORS: 
+- Modify `Program.cs` add Cors Angular policy
+
+
+
+

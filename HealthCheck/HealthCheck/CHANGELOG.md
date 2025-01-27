@@ -87,4 +87,8 @@ The following steps occurs after project was generated for our purpose:
   - First location is projects > HealtCheck > architect > build > options > assets
   - Second location is projects > HealthCheck > architect > test > options > assets
 - Create a new file `ngsw-config.json` at the root of the folder. 
-- 
+- Modify `package.json` under @angular/service-worker as 'angular-service-connection': "13.0.1"
+- Update `app.module.ts` include environment, ConnectionServiceModule, ConencitonServiceOptions, ConenctionServiceOptionsToken
+- Update `app.component.ts` will contain the logic if internet is down or network is not connected
+- update `app.component.html` add the banner type warning using div
+- udpate `app.component.scss` to add styling to the banner type message.
