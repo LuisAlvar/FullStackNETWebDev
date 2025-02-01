@@ -47,7 +47,7 @@ public class SeedController : ControllerBase
       throw new SecurityException("Not allowed");
     }
 
-    var path = Path.Combine(_env.ContentRootPath, "Data/Source/worldcities.xlsx");
+    var path = System.IO.Path.Combine(_env.ContentRootPath, "Data/Source/worldcities.xlsx");
     _logger.LogInformation($"Data located at {path}");
 
     using var stream = System.IO.File.OpenRead(path);

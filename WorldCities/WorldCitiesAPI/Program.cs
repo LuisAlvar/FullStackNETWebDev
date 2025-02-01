@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
+using WorldCitiesAPI.Data.GraphQL;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,7 +58,16 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 }).AddEntityFrameworkStores<ApplicationDbContext>();
 
+// Add Our Jwt Token Generation Handler
 builder.Services.AddScoped<JwtHandler>();
+
+// Add GraphQL via HotChocoloate
+builder.Services.AddGraphQLServer()
+  .AddAuthorization()
+  .AddQueryType<Query>()
+  .AddMutationType<Mutation>()
+  .AddFiltering()
+  .AddSorting();
 
 // Configure JWT Authentication 
 builder.Services.AddAuthentication(opt =>
@@ -128,6 +138,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGraphQL("/api/graphql");
 
 app.MapGet("/api/Account/ProtectedEndpoint", () => {
   return Results.Ok("You have accessed a protected endpoint.");
