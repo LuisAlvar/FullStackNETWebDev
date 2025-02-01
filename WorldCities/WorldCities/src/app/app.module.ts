@@ -23,6 +23,10 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../envrionments/environment';
 import { ConnectionServiceModule, ConnectionServiceOptions, ConnectionServiceOptionsToken } from 'angular-connection-service';
 
+import { APOLLO_OPTIONS } from 'apollo-angular';
+import { HttpLink } from 'apollo-angular/http';
+import { InMemoryCache } from '@apollo/client/core';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -62,6 +66,24 @@ import { ConnectionServiceModule, ConnectionServiceOptions, ConnectionServiceOpt
       useValue: <ConnectionServiceOptions>{
         heartbeatUrl: environment.baseURL + 'api/heartbeat'
       }
+    },
+    {
+      provide: APOLLO_OPTIONS,
+      useFactory: (httpLink: HttpLink) => {
+        return {
+          cache: new InMemoryCache({
+            addTypename: false
+          }),
+          link: httpLink.create({
+            uri: environment.baseURL + 'api/graphql'
+          }),
+          defaultOptions: {
+            watchQuery: { fetchPolicy: 'no-cache' },
+            query: { fetchPolicy: 'no-cache' }
+          }
+        };
+      },
+      deps: [HttpLink]
     }
   ],
   bootstrap: [AppComponent]

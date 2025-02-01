@@ -78,7 +78,7 @@ The following steps were used to generate this project:
 - Modify `Program.cs` add a minimal api method for /api/heartbeat
 
 
-01/31/2024
+01/31/2025
 - Add Nuget package `HotChocolate.AspNetCore --version 14.3.0`
 - Add Nuget package `HotChocolate.AspNetcore.Authorization --verizon 14.3.0`
 - Add Nuget package `HotChocolate.Data.EntityFramework --version 14.3.0`
@@ -88,4 +88,4 @@ The following steps were used to generate this project:
 - Create a new file	`Mutation.cs` under `/Data/GraphQL`
 - Modify `Program.cs` add to Services.AddGraphQL 
 	- and app.MapGraphQL for HotChocoloate built-inGraphQL web-based client
-
+- Modify `Query.cs` add a new method GetCitiesApiResult

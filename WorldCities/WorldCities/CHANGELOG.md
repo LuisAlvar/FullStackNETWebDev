@@ -126,3 +126,10 @@ The following steps were used to generate this project:
 - Update  `app.component.ts` a good place to implement it would be here , which contains all of our components, regardless of the front-end route picked by the user
 - Update `app.commponent.html` add a div type banner with a message of offline with *ngIf
 - Update `app.component.scss` add styling to this new banner tye message
+
+01/31/2025
+- Run at the root folder `npm install @apollo/client@3.12.8`
+- Run at the root folder `npm install @apollo-angular@8.0.1`
+- Run at the root folder `npm install graphql@16.10.0`
+- Update `app.module.ts` file with a new provider for Apollo
+- Refactoring `CityService.ts` with replace the REST implemenation with GraphQL
