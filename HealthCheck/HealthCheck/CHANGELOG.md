@@ -92,3 +92,12 @@ The following steps occurs after project was generated for our purpose:
 - Update `app.component.ts` will contain the logic if internet is down or network is not connected
 - update `app.component.html` add the banner type warning using div
 - udpate `app.component.scss` to add styling to the banner type message.
+
+- Run `npm install @microsoft/signalr@8.0.7`
+- Create a new file  `health-check.service.ts` under /src/app/health-check folder
+- Modify `angular.json` we only need to add "serviceWorker": "ngsw-config.json"
+- Modify `environment.prod.ts and environment.ts` the baseURL were switched. 
+- Modify `app.component.ts` we had HasInternetAccess and switch it to hasInternetAccess
+- Modify `health-check.component.ts` we only inject HealtCheckService
+- Modify `health-check.component.html` add *ngif="!(result | async)" and add a Refresh button to send data to server via SignalR
+

@@ -15,7 +15,7 @@ export class AppComponent {
   constructor(private connectionService: ConnectionService) {
     this.connectionService.monitor().subscribe((currentState: any) => {
       this.hasNetworkConnection = currentState.hasNetworkConnection;
-      this.hasInternetAccess = currentState.HasInternetAccess;
+      this.hasInternetAccess = currentState.hasInternetAccess;
     });
   }
 

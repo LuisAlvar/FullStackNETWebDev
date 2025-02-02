@@ -1,7 +1,7 @@
 <h1>Health Check</h1>
 <p>Here are the results of our health check:</p>
-<p *ngIf="!result_data"><em>Loading ... </em></p>
-<table class="table table-striped" aria-labelledby="tableLabel" *ngIf="result_data">
+<p *ngIf="!(result | async)"><em>Loading ... </em></p>
+<table class="table table-striped" aria-labelledby="tableLabel" *ngIf="result | async as res">
   <thead>
     <tr>
       <th>Name</th>
@@ -11,7 +11,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let check of result_data.checks">
+    <tr *ngFor="let check of res.checks">
       <td>{{check.name}}</td>
       <td>{{check.responseTime}}</td>
       <td class="status {{check.status}}">{{check.status}}</td>
@@ -19,3 +19,7 @@
     </tr>
   </tbody>
 </table>
+<hr />
+<button (click)="onRefresh()">
+  Refresh
+</button>

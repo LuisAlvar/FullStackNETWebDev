@@ -31,6 +31,12 @@ The following steps occurs after project was generated for our purpose:
 - Modify `appsettings.json` add AllowedCORS: 
 - Modify `Program.cs` add Cors Angular policy
 
-
-
+02/01/2025
+- Add Nuget Package `Microsoft.AspNetCore.SignalR` to HealthCheckAPI project
+- Create a new file `HealthCheckHub.cs` at the root folder of HealthCheckAPI project it will inherit Hub
+- Modify `Program.cs` setup service and middleware for SignlR
+- Create a new controller `BroadcastController.cs` add service to be injected IHubContext<HealthCheckHub>
+- Modify `Program.cs` add the SignlR middleware
+- Modify `Projram.cs` missing middleware on app.UseCors("AngularPolicy");
+- Modify `HealthCheckHub.cs` add a new method ClientUpdate to allow bi-directional data exchange
 
