@@ -100,4 +100,5 @@ The following steps occurs after project was generated for our purpose:
 - Modify `app.component.ts` we had HasInternetAccess and switch it to hasInternetAccess
 - Modify `health-check.component.ts` we only inject HealtCheckService
 - Modify `health-check.component.html` add *ngif="!(result | async)" and add a Refresh button to send data to server via SignalR
-
+- Modify `fetch-data.componet.ts` it was missing the envrionment for the baseURL and the endpoint was wrong with an extra /
+- Run `ng build`

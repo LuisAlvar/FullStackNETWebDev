@@ -39,4 +39,6 @@ The following steps occurs after project was generated for our purpose:
 - Modify `Program.cs` add the SignlR middleware
 - Modify `Projram.cs` missing middleware on app.UseCors("AngularPolicy");
 - Modify `HealthCheckHub.cs` add a new method ClientUpdate to allow bi-directional data exchange
-
+- Modify `Program.cs` add two middlewares for production: UseExceptionHandlerMiddleware and HSTSMiddleware
+- Create a new file `web.config` this for IIS deployment and startup. We need to ensure this file gets passed when we build and publish the web service.
+- Create a publish profile using Visual Studio 2022 UI within our local

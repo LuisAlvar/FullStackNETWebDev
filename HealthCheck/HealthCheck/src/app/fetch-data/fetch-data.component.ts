@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
+import { environment } from '../../environments/environment';
+
 interface WeatherForecast {
   date: string;
   temperatureC: number;
@@ -23,7 +25,7 @@ export class FetchDataComponent {
   }
 
   getForecasts() {
-    this.http.get<WeatherForecast[]>('/api/weatherforecast').subscribe(
+    this.http.get<WeatherForecast[]>( environment.baseUrl + 'api/weatherforecast').subscribe(
       (result) => {
         this.forecasts = result;
       },

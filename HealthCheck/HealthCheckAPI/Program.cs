@@ -38,6 +38,14 @@ if (app.Environment.IsDevelopment())
   app.UseSwagger();
   app.UseSwaggerUI();
 }
+else
+{
+  // Non-Development middlware for catching excpetion
+  app.UseExceptionHandler("/Error");
+  app.MapGet("/Error", () => Results.Problem());
+  // Non-Development middleware to further increas the security posture of our environments. 
+  app.UseHsts();
+}
 
 app.UseHttpsRedirection();
 
