@@ -53,7 +53,6 @@ $siteName = 'HealthCheckApp';
 $appPoolName = 'HealthCheckAppPool';
 $physicalPath = 'C:\inetpub\wwwroot\HealthCheckApp'; 
 $portHttps = 4200
-$bindingInfoHttps = 'https/*:${portHttps}:localhost'; 
 
 # Create the physicalPath folder if it doesn't exist
 if (!(Test-Path -Path $physicalPath)) {
@@ -67,23 +66,25 @@ if (!(Test-Path -Path $physicalPath)) {
 if (Test-Path 'IIS:\Sites\$siteName') {
   Write-Host 'Website '$siteName' already exists.'
 } else {
-  # Create a new application pool
-  if (!(Test-Path 'IIS:\AppPools\$appPoolName')) {
-    New-WebAppPool -Name $appPoolName
-    Write-Host 'Application Pool '$appPoolName' created successfully.'
-  } else {
-    Write-Host 'Application Pool '$appPoolName' already exists.'
-  }
 
   # Configure the site binding for HTTPS
   $cert = Get-Certificate -certFriendlyName $certSelfSignedName
+
   if ($cert) {
-    New-WebBinding -Name $siteName -Protocol 'https' -Port $portHttps -HostHeader 'localhost'
-    $bindingSiteHttps = '0.0.0.0!'+ $portHttps
-    Push-Location IIS:\SslBindings
-    New-Item $bindingSiteHttps -Value $cert
-    Pop-Location
-    Write-Host 'HTTPS binding configured successfully.'
+    # Create a new IIS website
+    New-Website -Name $siteName -PhysicalPath $physicalPath -ApplicationPool $appPoolName
+    Write-Host 'Website '$siteName' created successfully.'
+
+    # Bind the HTTPS certificate to the website
+    New-WebBinding -Name $siteName -IPAddress "*" -Port $portHttps -Protocol https
+    $binding = Get-WebBinding -Name $siteName -Protocol "https"
+    $binding.AddSslCertificate($cert.Thumbprint, "My")
+    Write-Host 'HTTPS binding created successfully.'
+
+    # Remove the default HTTP binding on port 80
+    Remove-WebBinding -Name $siteName -IPAddress "*" -Port 80 -Protocol http
+    Write-Host 'HTTP binding on port 80 removed successfully.'
+
   } else {
     Write-Host 'Certificate '$certSelfSignedName' not found.'
   }
@@ -117,7 +118,7 @@ $webConfigContent = @"
 # Create or overwrite the web.config file with the content
 Set-Content -Path $webConfigPath -Value $webConfigContent
 
-Write-Host 'web.config created successfully at $webConfigPath'
+Write-Host 'web.config created successfully at '$webConfigPath''
 
 
 exit 0;

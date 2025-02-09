@@ -21,7 +21,8 @@ $appPoolName = 'HealthCheckAppPool'
 $certFriendlyName = 'HealthCheckApp_Cert'
 
 # Remove the website if it exists
-if (Test-Path 'IIS:\Sites\$siteName') {
+$siteExists = Get-Website | Where-Object { $_.Name -eq $siteName }
+if ($siteExists) {
     Remove-Website -Name $siteName
     Write-Host 'Website '$siteName' removed successfully.'
 } else {
@@ -29,7 +30,8 @@ if (Test-Path 'IIS:\Sites\$siteName') {
 }
 
 # Remove the application pool if it exists
-if (Test-Path 'IIS:\AppPools\$appPoolName') {
+$appPoolExists = Get-Item "IIS:\AppPools\$appPoolName"
+if ($appPoolExists) {
     Remove-WebAppPool -Name $appPoolName
     Write-Host 'Application Pool '$appPoolName' removed successfully.'
 } else {

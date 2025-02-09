@@ -1,25 +1,12 @@
 Import-Module WebAdministration;
 Import-Module IISAdministration;
 
-# Function to remove the certificate
-function Remove-Certificate {
-    param (
-        [string]$certFriendlyName
-    )
-    $cert = Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.FriendlyName -eq $certFriendlyName };
-    if ($cert) {
-        $cert | Remove-Item
-        Write-Host 'Certificate '$certFriendlyName' removed successfully.'
-    } else {
-        Write-Host 'Certificate '$certFriendlyName' not found.'
-    }
-}
-
 # Variables
 $siteName = 'HealthCheckApp'
 
 # Remove the website if it exists
-if (Test-Path 'IIS:\Sites\$siteName') {
+$siteExists = Get-Website | Where-Object { $_.Name -eq $siteName }
+if ($siteExists) {
     Remove-Website -Name $siteName
     Write-Host 'Website '$siteName' removed successfully.'
 } else {
@@ -36,6 +23,5 @@ if (Test-Path -Path $webConfigPath) {
 } else {
     Write-Host 'web.config not found at $webConfigPath'
 }
-
 
 Write-Host 'Uninstallation completed successfully.'
