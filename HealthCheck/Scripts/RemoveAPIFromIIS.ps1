@@ -30,7 +30,7 @@ if ($siteExists) {
 }
 
 # Remove the application pool if it exists
-$appPoolExists = Get-Item "IIS:\AppPools\$appPoolName"
+$appPoolExists = Get-Item ""IIS:\AppPools\$appPoolName""
 if ($appPoolExists) {
     Remove-WebAppPool -Name $appPoolName
     Write-Host 'Application Pool '$appPoolName' removed successfully.'

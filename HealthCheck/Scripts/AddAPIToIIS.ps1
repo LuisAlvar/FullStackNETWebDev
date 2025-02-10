@@ -73,11 +73,16 @@ if (Test-Path 'IIS:\Sites\$siteName') {
   # Configure the site binding for HTTPS
   $cert = Get-Certificate -certFriendlyName $certSelfSignedName
   if ($cert) {
-    New-WebBinding -Name $siteName -Protocol 'https' -Port $portHttps -HostHeader 'localhost'
-    $bindingSiteHttps = '0.0.0.0!'+ $portHttps
-    Push-Location IIS:\SslBindings
-    New-Item $bindingSiteHttps -Value $cert
-    Pop-Location
+    
+    # Add new HTTPS binding
+    New-WebBinding -Name $siteName -IPAddress '*' -Port $portHttps -Protocol https
+
+    $binding = Get-WebBinding -Name $siteName -Protocol 'https' -Port $portHttps
+    $binding.AddSslCertificate($cert.GetCertHashString(), 'My')
+
+    # Optional: Disable specific protocols and features
+    Set-WebConfigurationProperty -Filter 'system.webServer/security/access' -Name 'sslFlags' -Value 'Ssl, Ssl128' -PSPath 'IIS:\Sites\$siteName'
+
     Write-Host 'HTTPS binding configured successfully.'
   } else {
     Write-Host 'Certificate '$certSelfSignedName' not found.'

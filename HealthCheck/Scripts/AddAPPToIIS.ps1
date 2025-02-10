@@ -76,13 +76,13 @@ if (Test-Path 'IIS:\Sites\$siteName') {
     Write-Host 'Website '$siteName' created successfully.'
 
     # Bind the HTTPS certificate to the website
-    New-WebBinding -Name $siteName -IPAddress "*" -Port $portHttps -Protocol https
-    $binding = Get-WebBinding -Name $siteName -Protocol "https"
-    $binding.AddSslCertificate($cert.Thumbprint, "My")
+    New-WebBinding -Name $siteName -IPAddress '*' -Port $portHttps -Protocol https
+    $binding = Get-WebBinding -Name $siteName -Protocol 'https'
+    $binding.AddSslCertificate($cert.Thumbprint, 'My')
     Write-Host 'HTTPS binding created successfully.'
 
     # Remove the default HTTP binding on port 80
-    Remove-WebBinding -Name $siteName -IPAddress "*" -Port 80 -Protocol http
+    Remove-WebBinding -Name $siteName -IPAddress '*' -Port 80 -Protocol http
     Write-Host 'HTTP binding on port 80 removed successfully.'
 
   } else {
@@ -96,7 +96,7 @@ if (Test-Path 'IIS:\Sites\$siteName') {
 $webConfigPath = 'C:\inetpub\wwwroot\HealthCheckApp\web.config'
 
 # XML Content for web.config
-$webConfigContent = @"
+$webConfigContent = @'
 <configuration>
     <system.webServer>
         <rewrite>
@@ -113,13 +113,11 @@ $webConfigContent = @"
         </rewrite>
     </system.webServer>
 </configuration>
-"@
+'@
 
 # Create or overwrite the web.config file with the content
 Set-Content -Path $webConfigPath -Value $webConfigContent
 
 Write-Host 'web.config created successfully at '$webConfigPath''
 
-
 exit 0;
-
