@@ -42,3 +42,10 @@ The following steps occurs after project was generated for our purpose:
 - Modify `Program.cs` add two middlewares for production: UseExceptionHandlerMiddleware and HSTSMiddleware
 - Create a new file `web.config` this for IIS deployment and startup. We need to ensure this file gets passed when we build and publish the web service.
 - Create a publish profile using Visual Studio 2022 UI within our local
+
+
+02/11/2025	
+- Add Docker support to HealthCheckAPI 
+- VS2022 Runs `docker build -f "C:\Workstation\FullStackNETWebDev\HealthCheck\HealthCheckAPI\Dockerfile" --force-rm -t healthcheckapi --build-arg "BUILD_CONFIGURATION=Release" --build-arg "LAUNCHING_FROM_VS=true" --label "com.microsoft.created-by=visual-studio" --label "com.microsoft.visual-studio.project-name=HealthCheckAPI" "C:\Workstation\FullStackNETWebDev\HealthCheck\HealthCheckAPI"`
+- Run `docker build -t luisenalvar\healthcheckapi .`
+- Run `docker run -p 32796:80 -p 32797:443 -e ASPNETCORE_ENVIRONMENT=Development healthcheckapi`
