@@ -11,10 +11,10 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["HealthCheckAPI.csproj", "."]
-RUN dotnet restore "./HealthCheckAPI.csproj"
+COPY ["HealthCheckAPI/HealthCheckAPI.csproj", "HealthCheckAPI/"]
+RUN dotnet restore "./HealthCheckAPI/HealthCheckAPI.csproj"
 COPY . .
-WORKDIR "/src/."
+WORKDIR "/src/HealthCheckAPI"
 RUN dotnet build "./HealthCheckAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage

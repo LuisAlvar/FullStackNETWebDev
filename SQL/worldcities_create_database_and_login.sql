@@ -1,7 +1,10 @@
+CREATE DATABASE WorldCities
+GO
+
 -- Check if the login exists at the server level
 IF NOT EXISTS (SELECT * FROM master.sys.server_principals WHERE name = 'WorldCities')
 BEGIN
-    PRINT 'Server-level login does not exists.'
+    PRINT 'Server-level login does not exists. Adding now!'
 	CREATE LOGIN WorldCities
 	WITH PASSWORD='MyVeryOwn$721'
 END
@@ -14,7 +17,7 @@ END
 USE WorldCities;
 IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = 'WorldCities')
 BEGIN
-    PRINT 'Database-level user does not exists.'
+    PRINT 'Database-level user does not exists. Adding Now!'
 	CREATE USER WorldCities
 		FOR LOGIN WorldCities
 		WITH DEFAULT_SCHEMA=dbo

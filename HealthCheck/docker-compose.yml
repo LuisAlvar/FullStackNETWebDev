@@ -1,0 +1,6 @@
+services:
+  healthcheckapi:
+    image: ${DOCKER_REGISTRY-}healthcheckapi
+    build:
+      context: .
+      dockerfile: HealthCheckAPI/Dockerfile

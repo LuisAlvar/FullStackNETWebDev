@@ -1,21 +1,23 @@
-# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+# Use an official Node.js runtime as the base image
+FROM node:14
 
-# This stage is used when running from VS in fast mode (Default for Debug configuration)
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
-WORKDIR /app
+# Set the working directory in the container
+WORKDIR /usr/src/app
+
+# Copy package.json and package-lock.json files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the application code
+COPY . .
+
+# Build the Angular app for production
+RUN npm run build --prod
+
+# Expose the port the app runs on
 EXPOSE 4200
 
-# This stage is used to build the service project
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS with-node
-RUN apt-get update
-RUN apt-get install curl
-RUN curl -sL https://deb.nodesource.com/setup_20.x | bash
-RUN apt-get -y install nodejs
-RUN npm install -g @angular/cli
-
-FROM with-node AS build
-ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY . .
-COPY ../HealthCheckAPI/ .
-
+# Command to run the application
+CMD ["npx", "http-server", "dist/HealthCheck"]

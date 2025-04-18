@@ -102,3 +102,6 @@ The following steps occurs after project was generated for our purpose:
 - Modify `health-check.component.html` add *ngif="!(result | async)" and add a Refresh button to send data to server via SignalR
 - Modify `fetch-data.componet.ts` it was missing the envrionment for the baseURL and the endpoint was wrong with an extra /
 - Run `ng build`
+
+02/19/2025
+- Create `Dockerfile` file at the root folder on Angular project

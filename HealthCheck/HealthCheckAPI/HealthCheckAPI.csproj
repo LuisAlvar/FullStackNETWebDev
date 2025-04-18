@@ -10,7 +10,7 @@
     <SignAssembly>False</SignAssembly>
     <UserSecretsId>79949c72-41de-4fda-87e0-aa30b6deccfa</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>.</DockerfileContext>
+    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
   <ItemGroup>

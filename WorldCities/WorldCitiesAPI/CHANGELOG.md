@@ -89,3 +89,4 @@ The following steps were used to generate this project:
 - Modify `Program.cs` add to Services.AddGraphQL 
 	- and app.MapGraphQL for HotChocoloate built-inGraphQL web-based client
 - Modify `Query.cs` add a new method GetCitiesApiResult
+- Modify `Program.cs` add two middlewares for production: UseExceptionHandlerMiddleware and HSTSMiddleware
