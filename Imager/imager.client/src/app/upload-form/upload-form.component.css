@@ -45,6 +45,12 @@
   object-fit: cover;
 }
 
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
 .submit-btn {
   margin-top: 20px;
   width: 100%

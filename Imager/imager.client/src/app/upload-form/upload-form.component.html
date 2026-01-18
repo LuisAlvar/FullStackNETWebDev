@@ -15,8 +15,67 @@
 
     <h3>Upload Image</h3>
 
+    <!--BEFORE IMAGE IS SELECTED-->
+    <ng-container *ngIf="!previewUrl; else previewMode">
+      <div class="drop-zone"
+           [class.dragging]="isDragging"
+           (dragover)="onDragOver($event)"
+           (dragleave)="onDragLeave()"
+           (drop)="onDrop($event)">
+        <mat-icon>cloud-upload</mat-icon>
+        <p>Drag & drop image here</p>
+      </div>
+      <p class="center">Or choose a file:</p>
+      <button mat-raised-button color="primary" (click)="fileInput.click()">
+        <mat-icon>folder_open</mat-icon>
+        Choose File
+      </button>
+      <input #fileInput type="file" accept="image/*" hidden (change)="onFileSelected($event)" />
+    </ng-container>
+
+    <!--AFTER IMAGE IS SELECTED-->
+    <ng-template #previewMode>
+      <mat-card *ngIf="previewUrl" class="preview-card">
+        <img [src]="previewUrl" alt="Preview" class="preview-image" />
+      </mat-card>
+
+      <div class="button-row">
+        <button mat-stroked-button color="primary" (click)="fileInput2.click()">
+          <mat-icon>refresh</mat-icon>
+          Choose Different File
+        </button>
+        <button mat-stroked-button color="warm" (click)="clearImage()">
+          <mat-icon>clear</mat-icon>
+          clear
+        </button>
+        <input #fileInput2 type="file" accept="image/*" hidden (change)="onFileSelected($event)" />
+      </div>
+
+      <button mat-raised-button color="accent" class="submit-btn" [disabled]="form.invalid">Submit</button>
+    </ng-template>
+
+  </form>
+</mat-card>
+
+<!--<mat-card class="form-card">
+  <form [formGroup]="form" (ngSubmit)="submit()">
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput rows="4" formControlName="description"></textarea>
+    </mat-form-field>
+
+    <mat-divider></mat-divider>
+
+    <h3>Upload Image</h3>-->
+
     <!--Drag & Drop Zone-->
-    <div class="drop-zone"
+    <!--<div class="drop-zone"
          [class.dragging]="isDragging"
          (dragover)="onDragOver($event)"
          (dragleave)="onDragLeave()"
@@ -33,17 +92,17 @@
       Choose File
     </button>
 
-    <input #fileInput type="file" accept="image/*" hidden (change)="onFileSelected($event)" />
+    <input #fileInput type="file" accept="image/*" hidden (change)="onFileSelected($event)" />-->
 
     <!--Image Preview-->
-    <mat-card *ngIf="previewUrl" class="preview-card">
+    <!--<mat-card *ngIf="previewUrl" class="preview-card">
       <img [src]="previewUrl" alt="Preview" class="preview-image" />
     </mat-card>
 
     <button mat-raised-button color="accent" class="submit-btn" [disabled]="form.invalid">Submit</button>
 
   </form>
-</mat-card>
+</mat-card>-->
 
 
 

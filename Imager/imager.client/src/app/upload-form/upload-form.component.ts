@@ -20,18 +20,6 @@ export class UploadFormComponent {
     });
   }
 
-  setFile(file: File | null) {
-    if (file) {
-      this.uploadedFile = file;
-      this.form.patchValue({ image: file });
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.previewUrl = reader.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
   onFileSelected(event: any) {
     const file = event.target.files[0];
     this.setFile(file);
@@ -51,6 +39,24 @@ export class UploadFormComponent {
     this.isDragging = false;
     const file = event.dataTransfer?.files[0];
     this.setFile(file || null);
+  }
+
+  setFile(file: File | null) {
+    if (file) {
+      this.uploadedFile = file;
+      this.form.patchValue({ image: file });
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewUrl = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  clearImage() {
+    this.uploadedFile = null;
+    this.previewUrl = null;
+    this.form.patchValue({ image: null })
   }
 
   submit() {
