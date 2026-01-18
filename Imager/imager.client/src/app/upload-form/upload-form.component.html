@@ -1,14 +1,63 @@
-<form [formGroup]="form" (ngSubmit)="submit()">
+<mat-card class="form-card">
+  <form [formGroup]="form" (ngSubmit)="submit()">
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput rows="4" formControlName="description"></textarea>
+    </mat-form-field>
+
+    <mat-divider></mat-divider>
+
+    <h3>Upload Image</h3>
+
+    <!--Drag & Drop Zone-->
+    <div class="drop-zone"
+         [class.dragging]="isDragging"
+         (dragover)="onDragOver($event)"
+         (dragleave)="onDragLeave()"
+         (drop)="onDrop($event)">
+      <mat-icon>cloud-upload</mat-icon>
+      <p *ngIf="!uploadedFile">Drag & drop image here</p>
+      <p *ngIf="uploadedFile">Selected: {{ uploadedFile.name }}</p>
+    </div>
+
+    <p class="center">Or choose a file:</p>
+
+    <button mat-raised-button color="primary" (click)="fileInput.click()">
+      <mat-icon>folder_open</mat-icon>
+      Choose File
+    </button>
+
+    <input #fileInput type="file" accept="image/*" hidden (change)="onFileSelected($event)" />
+
+    <!--Image Preview-->
+    <mat-card *ngIf="previewUrl" class="preview-card">
+      <img [src]="previewUrl" alt="Preview" class="preview-image" />
+    </mat-card>
+
+    <button mat-raised-button color="accent" class="submit-btn" [disabled]="form.invalid">Submit</button>
+
+  </form>
+</mat-card>
+
+
+
+<!--<form [formGroup]="form" (ngSubmit)="submit()">
   <label>Title</label>
   <input type="text" formControlName="title" />
 
   <label>Description</label>
   <textarea formControlName="description"></textarea>
 
-  <label>Upload Image</label>
+  <label>Upload Image</label>-->
 
   <!--Drag & Drop Zone-->
-  <div class="drop-zone"
+  <!--<div class="drop-zone"
     [class.dragging]="isDragging"
     (dragover)="onDragOver($event)"
     (dragleave)="onDragLeave()"
@@ -18,14 +67,14 @@
   </div>
 
   <p>Or choose a file:</p>
-  <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+  <input type="file" accept="image/*" (change)="onFileSelected($event)" />-->
 
   <!--Image Preview-->
-  <div *ngIf="previewUrl" class="preview-container">
+  <!--<div *ngIf="previewUrl" class="preview-container">
     <img [src]="previewUrl" alt="Preview" class="preview-image" />
   </div>
 
   <button type="submit" [disabled]="form.invalid">Submit</button>
 
-</form>
+</form>-->
 

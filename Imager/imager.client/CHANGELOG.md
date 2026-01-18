@@ -30,3 +30,6 @@ The following steps were use to complete the bussiness requriments:
 - Update `app.component.ts` remove all WeatherForecast items
 - Modify `app.component.html` remove all and add only the selector for UploadFormComponent
 - Modify `upload-form.component.*` files to the main functioality
+- Run `ng add @angular/material`
+- Modify `app.module.ts` with MatFormFieldModule;MatInputModule;MatButtonModule;MatCardModule;MatIconModule;MatDividerModule;
+- Modify `upload-form.component.*` files to upgrade UI features with angular material 
