@@ -1,0 +1,41 @@
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 400px;
+}
+
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.drop-zone {
+  border: 2px dashed #888;
+  padding: 30px;
+  text-align: center;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.drop-zone.dragging {
+  background-color: #eef;
+  border-color: #55f;
+}
+
+.preview-container {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.preview-image {
+  max-width: 250px;
+  max-height: 250px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  object-fit: cover;
+}

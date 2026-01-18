@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imager.Server", "Imager.Server\Imager.Server.csproj", "{774A2D3D-F0F0-454C-9613-7219684C53D5}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "imager.client", "imager.client\imager.client.esproj", "{F470EA24-1722-4AD6-A9F7-1AE610F32696}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{774A2D3D-F0F0-454C-9613-7219684C53D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{774A2D3D-F0F0-454C-9613-7219684C53D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{774A2D3D-F0F0-454C-9613-7219684C53D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{774A2D3D-F0F0-454C-9613-7219684C53D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F470EA24-1722-4AD6-A9F7-1AE610F32696}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F470EA24-1722-4AD6-A9F7-1AE610F32696}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F470EA24-1722-4AD6-A9F7-1AE610F32696}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F470EA24-1722-4AD6-A9F7-1AE610F32696}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F470EA24-1722-4AD6-A9F7-1AE610F32696}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F470EA24-1722-4AD6-A9F7-1AE610F32696}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {27F75385-332C-4DD4-B15D-136B31FE328B}
+	EndGlobalSection
+EndGlobal

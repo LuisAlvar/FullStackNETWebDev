@@ -1,0 +1,31 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label>Title</label>
+  <input type="text" formControlName="title" />
+
+  <label>Description</label>
+  <textarea formControlName="description"></textarea>
+
+  <label>Upload Image</label>
+
+  <!--Drag & Drop Zone-->
+  <div class="drop-zone"
+    [class.dragging]="isDragging"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave()"
+    (drop)="onDrop($event)">
+    <p *ngIf="!uploadedFile">Drag & drop image here</p>
+    <p *ngIf="uploadedFile">Selected: {{ uploadedFile.name }}</p>
+  </div>
+
+  <p>Or choose a file:</p>
+  <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+
+  <!--Image Preview-->
+  <div *ngIf="previewUrl" class="preview-container">
+    <img [src]="previewUrl" alt="Preview" class="preview-image" />
+  </div>
+
+  <button type="submit" [disabled]="form.invalid">Submit</button>
+
+</form>
+
