@@ -31,5 +31,7 @@ The following steps were use to complete the bussiness requriments:
 - Modify `app.component.html` remove all and add only the selector for UploadFormComponent
 - Modify `upload-form.component.*` files to the main functioality
 - Run `ng add @angular/material`
-- Modify `app.module.ts` with MatFormFieldModule;MatInputModule;MatButtonModule;MatCardModule;MatIconModule;MatDividerModule;
+- Modify `app.module.ts` with MatFormFieldModule;MatInputModule;MatButtonModule;MatCardModule;MatIconModule;MatDividerModule;MatProgressBarModule
 - Modify `upload-form.component.*` files to upgrade UI features with angular material 
+- Run `ng generate service core/services/imager-app`
+- Move and create `app/features/upload/upload-form`

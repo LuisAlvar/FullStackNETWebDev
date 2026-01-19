@@ -1,14 +1,21 @@
 <mat-card class="form-card">
   <form [formGroup]="form" (ngSubmit)="submit()">
-
+    <!--TITLE-->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Title</mat-label>
       <input matInput formControlName="title" />
+      <mat-error *ngIf="form.get('title')?.hasError('required')">
+        Title is required
+      </mat-error>
     </mat-form-field>
 
+    <!--DESCRIPTION-->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Description</mat-label>
       <textarea matInput rows="4" formControlName="description"></textarea>
+      <mat-error *ngIf="form.get('description')?.hasError('required')">
+        Description is required
+      </mat-error>
     </mat-form-field>
 
     <mat-divider></mat-divider>
@@ -38,7 +45,6 @@
       <mat-card *ngIf="previewUrl" class="preview-card">
         <img [src]="previewUrl" alt="Preview" class="preview-image" />
       </mat-card>
-
       <div class="button-row">
         <button mat-stroked-button color="primary" (click)="fileInput2.click()">
           <mat-icon>refresh</mat-icon>
@@ -50,10 +56,29 @@
         </button>
         <input #fileInput2 type="file" accept="image/*" hidden (change)="onFileSelected($event)" />
       </div>
-
-      <button mat-raised-button color="accent" class="submit-btn" [disabled]="form.invalid">Submit</button>
+      <!--UPLOAD PROGRESS-->
+      <mat-progress-bar *ngIf="isUploading"
+                        mode="determinate"
+                        [value]="uploadProgress"
+                        class="progress-bar">
+      </mat-progress-bar>
     </ng-template>
 
+    <!--IMAGE ERRORS-->
+    <mat-error *ngIf="form.get('image')?.hasError('invalidType')">
+      File must be an image (jpg, png, gif, etc.)
+    </mat-error>
+
+    <mat-error *ngIf="form.get('image')?.hasError('maxSize')">
+      Image must be smaller than 6MB
+    </mat-error>
+
+    <button mat-raised-button
+            color="accent"
+            class="submit-btn"
+            [disabled]="form.invalid || isUploading">
+    Submit
+    </button>
   </form>
 </mat-card>
 
