@@ -9,3 +9,13 @@ The following steps were used to generate this project:
 
 
 - Remove `WeatherForecast.cs` file and anything related to Forecasting 
+- Run `dotnet tool update --global dotnet-ef --version 8.023`
+- Run `dotnet ef migrations add InitialCreate -o .\Data\Migrations`
+- Run `dotnet ef database update`
+- Run `dotnet ef migrations remove`
+
+Future Migraiton 
+- Run `dotnet ef migrations add AddTagsToImages`
+- Run `dotnet ef database update`
+
+

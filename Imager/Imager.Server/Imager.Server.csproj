@@ -7,6 +7,7 @@
     <SpaRoot>..\imager.client</SpaRoot>
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <SpaProxyServerUrl>https://localhost:4200</SpaProxyServerUrl>
+    <UserSecretsId>bf6ee16c-6d7f-4906-be64-8aab9b8aca9d</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

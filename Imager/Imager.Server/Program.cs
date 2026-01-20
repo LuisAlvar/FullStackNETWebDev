@@ -24,12 +24,36 @@ builder.Services.AddCors(options => {
 });
 
 var blobConnectionString = builder.Configuration["AzureBlob:ConnectionString"];
+Console.WriteLine($"Azure Blob Storage: Endpoint: {blobConnectionString}");
 builder.Services.AddSingleton(new BlobServiceClient(blobConnectionString));
 builder.Services.AddScoped<AzureBlobStorageService>();
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+var sqlConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+Console.WriteLine($"Azure SQL Server: Endpoint: {sqlConnectionString}");
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(sqlConnectionString));
 
 var app = builder.Build();
+
+#region  APPLY EF Core MIGRATIONS ONLY IN PRODUCTION
+if (app.Environment.IsProduction())
+{
+  using var scope = app.Services.CreateScope();
+  var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+  var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+  try
+  {
+    logger.LogInformation("Apply EF Core migraitons in Production ...");
+    db.Database.Migrate();
+    logger.LogInformation("EF Core migraitons applied successfully.");
+  }
+  catch (Exception ex)
+  {
+    logger.LogError(ex, "Error applying EF Core migrations.");
+    throw;
+  }
+}  
+#endregion
+
 
 app.UseCors("AllowAngular");
 
