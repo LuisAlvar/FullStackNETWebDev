@@ -75,7 +75,6 @@ export class UploadFormComponent {
       this.previewUrl = reader.result;
     };
     reader.readAsDataURL(file);
-
   }
 
   clearImage() {
@@ -103,8 +102,11 @@ export class UploadFormComponent {
       next: (event: HttpEvent<any>) => {
         if (event.type === HttpEventType.UploadProgress && event.total) {
           this.uploadProgress = Math.round(100 * event.loaded / event.total);
-        } else if (event.type === HttpEventType.Response) {
+        }
+        if (event.type === HttpEventType.Response) {
           console.log('Upload complete: ', event.body)
+          const id = event.body.id;
+          this.previewUrl = this.imagerService.getImageUrl(id)
           this.isUploading = false;
         }
       },

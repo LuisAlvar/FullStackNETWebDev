@@ -35,3 +35,11 @@ The following steps were use to complete the bussiness requriments:
 - Modify `upload-form.component.*` files to upgrade UI features with angular material 
 - Run `ng generate service core/services/imager-app`
 - Move and create `app/features/upload/upload-form`
+
+For CORS
+- Create `src/environments` folder
+- Create file `src/environmnets/environment.prod.ts` save for later
+- Create file `src/environmnets/environment.ts` add the .NET API https address to controller
+
+For a cleaner version to communicate with the .NET API 
+- Modify `imager-app.service.ts` file to change uploadImage() and getImagerUrl() will use environment.apiUrl
