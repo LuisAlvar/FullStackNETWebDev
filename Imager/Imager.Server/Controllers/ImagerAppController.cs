@@ -27,7 +27,11 @@ public class ImagerAppController : ControllerBase
     _db = appDbContext;
   }
 
-  
+  [HttpGet("handshake")]
+  public IActionResult Handshake()
+  {
+    return Ok(new { status = "ok", timestamp = DateTime.UtcNow });
+  }
 
   [HttpPost("upload")]
   public async Task<IActionResult> Upload([FromForm] ImageUploadRequest request)
